@@ -1,0 +1,2612 @@
+:root {
+  --crime-green: #1c9b6b;
+  --crime-blue: #1d6ec8;
+  --crime-blue-dark: #0f3f78;
+  --crime-red: #c62828;
+  --crime-white: #edf4ff;
+  --crime-bg: #f4f7fb;
+  --crime-surface: #ffffff;
+  --crime-border: #dfeaf5;
+  --crime-text: #102a43;
+  --crime-muted: #4d657d;
+  --crime-shadow: 0 16px 38px rgba(16, 42, 67, 0.08);
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(180deg, #edf4fb 0%, #f4f7fb 100%);
+  color: var(--crime-text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  color: var(--crime-white);
+  padding: 18px 24px;
+  width: 100vw;
+  min-height: 126px;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  border-radius: 0;
+  box-shadow: 0 12px 26px rgba(8, 27, 45, 0.18);
+  background-size: cover;
+  background-position: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.login-page {
+  min-height: 100svh;
+  padding: 0 20px 32px;
+  background: linear-gradient(180deg, #eef5fd 0%, #f4f7fb 100%);
+}
+
+.login-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  justify-content: flex-start;
+  width: 100vw;
+  min-height: clamp(130px, 18svh, 190px);
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding: 28px 20px;
+  text-align: left;
+  color: var(--crime-white);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 12px 26px rgba(8, 27, 45, 0.18);
+}
+
+.login-header-image {
+  width: 104px;
+  height: 78px;
+  flex: 0 0 auto;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.74);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  border-radius: 12px;
+}
+
+.login-header-text .police-label {
+  margin-bottom: 8px;
+}
+
+.login-header-text h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.login-card {
+  width: min(100%, 900px);
+  margin: 24px auto 0;
+  padding: 36px;
+  text-align: left;
+  background: var(--crime-surface);
+  border: 1px solid var(--crime-border);
+  border-radius: 8px;
+  box-shadow: var(--crime-shadow);
+}
+
+.login-subtitle {
+  margin: 0 0 24px;
+  text-align: center;
+  color: var(--crime-muted);
+}
+
+.login-role-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: 60%;
+  margin: 0 auto 18px;
+}
+
+.login-role-button {
+  padding: 11px 14px;
+  border: 1px solid var(--crime-border);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--crime-text);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+}
+
+.login-role-button.active {
+  border-color: var(--crime-blue);
+  background: var(--crime-blue);
+  color: #fff;
+}
+
+.login-form {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+}
+
+.dashboard-page {
+  min-height: 100svh;
+  padding: 0;
+  background: var(--crime-bg);
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px;
+  width: 100vw;
+  min-height: clamp(132px, 21svh, 228px);
+  margin: 0 0 8px;
+  padding: 42px 20px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: var(--crime-shadow);
+}
+
+.dashboard-page .dashboard-header,
+.admin-dashboard-page .dashboard-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.dashboard-header .login-header-text {
+  color: #fff;
+}
+
+.dashboard-header .login-header-text h1 {
+  margin: 0;
+  color: #fff;
+  font-size: 2rem;
+}
+
+.dashboard-status,
+.stat-grid,
+.dashboard-grid {
+  max-width: 1180px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: calc(200px * 1.15) minmax(0, 1fr);
+  gap: 24px;
+  min-height: calc(100svh - clamp(132px, 21svh, 228px) - 8px);
+  align-items: start;
+}
+
+.dashboard-sidebar {
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  height: auto;
+  padding: 18px 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  background: linear-gradient(180deg, #081b2d 0%, #0a2744 100%);
+  overflow-y: auto;
+  box-shadow: 0 18px 32px rgba(8, 27, 45, 0.12);
+}
+
+.dashboard-sidebar nav {
+  display: grid;
+  gap: 8px;
+}
+
+.dashboard-nav-link {
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.02);
+  color: #ebf5ff;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.dashboard-nav-link:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.1);
+  transform: translateY(-1px);
+}
+
+.dashboard-nav-link.active {
+  background: linear-gradient(135deg, #1d6ec8 0%, #0f4d8f 100%);
+  border-color: rgba(255,255,255,0.22);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05), 0 10px 24px rgba(29,110,200,0.26);
+}
+
+.dashboard-sidebar-logout {
+  margin-top: auto;
+}
+
+.dashboard-content {
+  min-width: 0;
+  padding-top: 4px;
+}
+
+.dashboard-search {
+  display: grid;
+  gap: 6px;
+  margin: 8px clamp(20px, 5vw, 72px) 0;
+}
+
+.dashboard-search label {
+  color: var(--crime-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dashboard-search input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--crime-border);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--crime-text);
+  font: inherit;
+  box-shadow: inset 0 1px 2px rgba(16,42,67,0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-search input:focus,
+.admin-subcity-filter select:focus,
+.admin-assignment-form input:focus,
+.admin-assignment-form select:focus {
+  outline: none;
+  border-color: rgba(29, 110, 200, 0.6);
+  box-shadow: 0 0 0 4px rgba(29, 110, 200, 0.12);
+}
+
+.admin-dashboard-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px clamp(20px, 5vw, 72px) 48px;
+}
+
+.admin-dashboard-content .dashboard-search {
+  margin: 0 0 18px;
+}
+
+.admin-filter-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr);
+  gap: 20px;
+  align-items: end;
+  margin-bottom: 18px;
+}
+
+.admin-filter-row .dashboard-search,
+.admin-filter-row .admin-subcity-filter {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.admin-subcity-filter {
+  display: grid;
+  gap: 6px;
+  max-width: 420px;
+  margin: 0 0 18px;
+}
+
+.admin-subcity-filter label {
+  color: var(--crime-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-subcity-filter select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--crime-border);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--crime-text);
+  font: inherit;
+  box-shadow: inset 0 1px 2px rgba(16,42,67,0.04);
+}
+
+.admin-assignment-panel {
+  width: 150%;
+  max-width: none;
+  position: relative;
+  left: -20%;
+}
+
+.officers-list-panel {
+  width: 120%;
+  max-width: 1440px;
+  left: -10%;
+}
+
+.officers-table-wrap {
+  width: 100%;
+}
+
+.officers-table {
+  min-width: 0;
+  width: 100%;
+}
+
+.officer-action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-width: 70px;
+  margin: 4px 8px 4px 0;
+  padding: 8px 12px;
+  background: var(--crime-blue);
+  color: #fff;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.officer-action-button:hover,
+.officer-action-button:focus-visible {
+  background: #0d5db5;
+  color: #fff;
+}
+
+.officer-action-delete {
+  background: #9b1c1c;
+}
+
+.officer-action-delete:hover,
+.officer-action-delete:focus-visible {
+  background: #7d1414;
+}
+
+.admin-assignment-form {
+  display: grid;
+  gap: 10px;
+  max-width: 100%;
+  height: 426px;
+  padding: 48px;
+  border: 1px solid var(--crime-border);
+  background: #fff;
+  box-shadow: var(--crime-shadow);
+}
+
+.admin-assignment-form label {
+  margin-top: 4px;
+  font-size: 1rem;
+  color: var(--crime-text);
+  font-weight: 600;
+}
+
+.admin-assignment-form input,
+.admin-assignment-form select {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 1px solid var(--crime-border);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--crime-text);
+  font: inherit;
+}
+
+.admin-assignment-form button {
+  margin-top: 10px;
+  min-height: 52px;
+  font-size: 1rem;
+}
+
+.assignment-success {
+  margin: 16px 0 0;
+  color: #207a42;
+  font-weight: 600;
+}
+
+.login-error-message {
+  color: var(--crime-red);
+  font-weight: 700;
+}
+
+.admin-report-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--crime-border);
+  background: #fff;
+  box-shadow: var(--crime-shadow);
+}
+
+.admin-report-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.admin-report-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--crime-border);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: var(--crime-shadow);
+}
+
+.admin-report-table th,
+.admin-report-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--crime-border);
+  vertical-align: top;
+}
+
+.admin-report-table th {
+  background: linear-gradient(180deg, #0b2f5a 0%, #0f3f78 100%);
+  color: #fff;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.admin-report-table tbody tr:nth-child(even) td {
+  background: rgba(29, 110, 200, 0.02);
+}
+
+.admin-report-table tbody tr:hover td {
+  background: rgba(29,110,200,0.04);
+}
+
+.admin-report-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.dashboard-reports {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 5vw, 72px) 40px;
+}
+
+.dashboard-section-heading {
+  margin-bottom: 18px;
+}
+
+.dashboard-section-heading .police-label {
+  margin-bottom: 4px;
+  color: var(--crime-muted);
+  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+}
+
+.dashboard-section-heading h2 {
+  margin: 0;
+  font-size: clamp(1.5rem, 2vw, 2.2rem);
+  line-height: 1.2;
+  color: var(--crime-text);
+}
+
+.crime-analytics {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px clamp(20px, 5vw, 72px) 48px;
+}
+
+.analytics-summary {
+  margin-top: 8px;
+  color: var(--crime-muted);
+}
+
+.analytics-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0 0 18px;
+}
+
+.analytics-kpi {
+  display: grid;
+  gap: 5px;
+  padding: 18px 20px;
+  border: 1px solid var(--crime-border);
+  border-radius: 12px;
+  background: linear-gradient(135deg, #fff 0%, #f3f8fc 100%);
+  box-shadow: var(--crime-shadow);
+}
+
+.analytics-kpi span,
+.analytics-kpi small {
+  color: var(--crime-muted);
+}
+
+.analytics-kpi strong {
+  color: var(--crime-blue-dark);
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.analytics-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 24px 0;
+  padding: 16px;
+  border: 1px solid var(--crime-border);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: var(--crime-shadow);
+}
+
+.analytics-filters label {
+  display: grid;
+  gap: 6px;
+  color: var(--crime-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.analytics-filters input,
+.analytics-filters select {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 11px;
+  border: 1px solid var(--crime-border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--crime-text);
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.analytics-panel {
+  min-width: 0;
+  max-width: 100%;
+  padding: 20px;
+  border: 1px solid var(--crime-border);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: var(--crime-shadow);
+}
+
+.analytics-panel-wide {
+  grid-column: 1 / -1;
+}
+
+.analytics-panel h3 {
+  margin: 0 0 18px;
+  color: var(--crime-text);
+  font-size: 1.05rem;
+}
+
+.analytics-chart-list {
+  display: grid;
+  gap: 13px;
+}
+
+.analytics-chart-row {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.analytics-chart-row:hover .analytics-chart-label {
+  color: var(--crime-blue);
+}
+
+.analytics-chart-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--crime-muted);
+  font-size: 0.9rem;
+}
+
+.analytics-chart-label span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.analytics-chart-label strong {
+  color: var(--crime-text);
+}
+
+.analytics-bar-track {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e7eff8;
+}
+
+.analytics-bar-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--crime-blue), var(--crime-green));
+}
+
+.analytics-trend-list {
+  display: grid;
+  gap: 8px;
+}
+
+.analytics-trend-row {
+  display: grid;
+  grid-template-columns: 72px 1fr minmax(130px, auto);
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--crime-border);
+}
+
+.analytics-trend-row span {
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.analytics-trend-row small {
+  color: var(--crime-muted);
+  text-align: right;
+}
+
+.analytics-trend-row .trend-up { color: var(--crime-green); }
+.analytics-trend-row .trend-down { color: var(--crime-red); }
+
+.analytics-report-table-wrap {
+  overflow-x: auto;
+}
+
+.analytics-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.analytics-report-table th,
+.analytics-report-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--crime-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.analytics-report-table th {
+  color: var(--crime-muted);
+  font-size: 0.76rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.analytics-empty,
+.analytics-error {
+  margin: 0;
+  color: var(--crime-muted);
+}
+
+.analytics-error {
+  padding: 16px;
+  border-left: 4px solid var(--crime-red);
+  background: #fff;
+}
+
+.report-list {
+  display: grid;
+  gap: 16px;
+}
+
+.report-type-group {
+  display: grid;
+  gap: 12px;
+}
+
+.report-type-group > h3 {
+  margin: 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(29,110,200,0.16);
+  color: var(--crime-text);
+  font-size: 1.2rem;
+}
+
+.report-type-group > h3 span {
+  color: var(--crime-muted);
+  font-weight: 500;
+}
+
+.report-card {
+  padding: 20px;
+  border: 1px solid var(--crime-border);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: var(--crime-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.report-card:hover {
+  transform: none;
+  box-shadow: 0 14px 28px rgba(15, 40, 80, 0.08);
+}
+
+.report-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.report-card-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.report-status-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px 5px 10px;
+  border: 1px solid var(--crime-border);
+  border-radius: 999px;
+  background: #f8fafc;
+  color: var(--crime-muted);
+  font-size: 0.8rem;
+}
+
+.status-control-label {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.report-status-control select {
+  min-width: 148px;
+  padding: 7px 30px 7px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--crime-text);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+}
+
+.report-status-control select:focus-visible {
+  box-shadow: 0 0 0 3px rgba(29, 110, 200, 0.22);
+}
+
+.resolved-case-information {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0;
+  padding: 14px;
+  border-left: 4px solid #207a42;
+  background: #f2fbf5;
+}
+
+.resolved-case-information label {
+  color: #207a42;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.resolved-case-information-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.resolved-case-information textarea {
+  width: 100%;
+  min-height: 92px;
+  resize: vertical;
+  padding: 10px 12px;
+  border: 1px solid #9bd5b1;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--crime-text);
+  font: inherit;
+}
+
+.resolved-case-information textarea:focus {
+  outline: 0;
+  border-color: #207a42;
+  box-shadow: 0 0 0 3px rgba(32, 122, 66, 0.16);
+}
+
+.save-case-info-button {
+  justify-self: flex-start;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--crime-blue);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.save-case-info-button:hover {
+  background: #0f4d8f;
+}
+
+.save-case-info-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.progress-save-status {
+  min-height: 1.2em;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.progress-save-status-saved {
+  color: #207a42;
+}
+
+.progress-save-status-error {
+  color: var(--crime-red);
+}
+
+.additional-information-panel {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0;
+  padding: 16px;
+  border-left: 4px solid #d69e2e;
+  background: #fffaf0;
+}
+
+.additional-information-panel h4 {
+  margin: 0;
+  color: #8a5b00;
+}
+
+.additional-information-item {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid #ecd99d;
+  background: #fff;
+}
+
+.additional-information-item.responded {
+  border-color: #9bd5b1;
+  box-shadow: 0 5px 14px rgba(32, 122, 66, 0.08);
+}
+
+.additional-information-received-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 14px;
+  border: 1px solid #9bd5b1;
+  border-radius: 8px;
+  background: #f2fbf5;
+  color: #207a42;
+}
+
+.additional-information-received-banner > div {
+  display: grid;
+  gap: 2px;
+}
+
+.additional-information-received-banner span {
+  color: #38664a;
+  font-size: 0.84rem;
+}
+
+.view-response-button {
+  flex: 0 0 auto;
+  padding: 8px 12px;
+  border: 1px solid #207a42;
+  border-radius: 6px;
+  background: #207a42;
+  color: #fff;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.view-response-button:hover {
+  background: #185f32;
+}
+
+.view-response-button.compact {
+  padding: 6px 10px;
+  background: #fff;
+  color: #207a42;
+}
+
+.view-response-button.compact:hover {
+  background: #e7f7ed;
+}
+
+.response-details-button {
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--crime-blue);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.response-details-button:hover {
+  background: #e8f1fa;
+}
+
+.unread-response-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: #c43b32;
+  vertical-align: middle;
+}
+
+.additional-information-item-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.citizen-response-panel {
+  display: grid;
+  gap: 12px;
+  margin-top: 4px;
+  padding: 14px;
+  border-left: 4px solid #207a42;
+  border-radius: 6px;
+  background: #f7fcf8;
+}
+
+.citizen-response-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.citizen-response-heading h5 {
+  margin: 0;
+  color: #185f32;
+  font-size: 0.95rem;
+}
+
+.citizen-response-heading time {
+  color: var(--crime-muted);
+  font-size: 0.78rem;
+}
+
+.citizen-response-text {
+  padding: 11px 12px;
+  border: 1px solid #d5eadb;
+  border-radius: 6px;
+  background: #fff;
+  white-space: pre-wrap;
+}
+
+.citizen-response-evidence {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  color: var(--crime-muted);
+  font-size: 0.84rem;
+}
+
+.citizen-response-evidence strong {
+  color: var(--crime-text);
+}
+
+.citizen-response-evidence a {
+  color: var(--crime-blue);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.response-modal-backdrop {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(9, 28, 48, 0.64);
+}
+
+.response-modal {
+  width: min(920px, 100%);
+  max-height: min(900px, calc(100vh - 48px));
+  overflow: auto;
+  padding: 24px;
+  border: 1px solid #dbe7f1;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(9, 28, 48, 0.28);
+}
+
+.response-modal-header,
+.response-modal-section-heading,
+.response-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.response-modal-header {
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--crime-border);
+}
+
+.response-modal-eyebrow {
+  color: #207a42;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.response-modal-header h2 {
+  margin: 4px 0 0;
+  color: var(--crime-text);
+  font-size: 1.45rem;
+}
+
+.response-modal-close {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--crime-border);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--crime-muted);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.response-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.response-modal-section {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--crime-border);
+  border-radius: 10px;
+  background: #fbfdff;
+}
+
+.response-modal-section-wide {
+  grid-column: 1 / -1;
+}
+
+.response-modal-section h3 {
+  margin: 0 0 12px;
+  color: var(--crime-text);
+  font-size: 1rem;
+}
+
+.response-modal-section-heading h3 {
+  margin: 0;
+}
+
+.response-modal-section-heading time {
+  color: var(--crime-muted);
+  font-size: 0.8rem;
+}
+
+.response-modal-facts {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.response-modal-facts div {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.7fr) 1fr;
+  gap: 10px;
+}
+
+.response-modal-facts dt {
+  color: var(--crime-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.response-modal-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.response-modal-message {
+  margin: 0 0 14px;
+  padding: 12px;
+  border-left: 3px solid #d69e2e;
+  background: #fffaf0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.response-modal-citizen-message {
+  border-left-color: #207a42;
+  background: #f2fbf5;
+}
+
+.response-evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.response-evidence-card {
+  overflow: hidden;
+  border: 1px solid #dbe7f1;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.response-evidence-card img,
+.response-evidence-card video {
+  display: block;
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  background: #e8f1fa;
+}
+
+.response-evidence-card > div {
+  display: grid;
+  gap: 5px;
+  padding: 10px;
+}
+
+.response-evidence-card strong,
+.response-evidence-card a,
+.response-evidence-card span {
+  overflow-wrap: anywhere;
+}
+
+.response-evidence-card a {
+  color: var(--crime-blue);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.response-evidence-missing {
+  display: grid;
+  height: 140px;
+  place-items: center;
+  color: var(--crime-muted);
+  background: #f2f5f7;
+  font-size: 0.82rem;
+}
+
+.response-modal-actions {
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.response-secondary-button,
+.response-primary-button {
+  padding: 9px 14px;
+  border-radius: 6px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.response-secondary-button {
+  border: 1px solid var(--crime-border);
+  background: #fff;
+  color: var(--crime-text);
+}
+
+.response-primary-button {
+  border: 1px solid var(--crime-blue);
+  background: var(--crime-blue);
+  color: #fff;
+}
+
+.response-secondary-button:disabled,
+.response-primary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.response-modal-error,
+.response-modal-success {
+  margin-top: 14px;
+  font-weight: 700;
+}
+
+.response-modal-error {
+  color: var(--crime-red);
+}
+
+.response-modal-success {
+  color: #207a42;
+}
+
+.additional-information-item p {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.additional-information-item a {
+  color: var(--crime-blue);
+  overflow-wrap: anywhere;
+}
+
+.additional-information-status {
+  color: #8a5b00;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.additional-information-status.received {
+  color: #207a42;
+}
+
+.additional-information-status.pending {
+  color: #8a5b00;
+}
+
+.additional-information-panel textarea {
+  width: 100%;
+  min-height: 86px;
+  resize: vertical;
+  padding: 10px 12px;
+  border: 1px solid #e6c56b;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--crime-text);
+  font: inherit;
+}
+
+@media (max-width: 560px) {
+  .additional-information-received-banner,
+  .additional-information-item-footer,
+  .citizen-response-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .view-response-button {
+    width: 100%;
+  }
+
+  .response-modal-backdrop {
+    padding: 10px;
+  }
+
+  .response-modal {
+    max-height: calc(100vh - 20px);
+    padding: 16px;
+  }
+
+  .response-modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .response-modal-section-wide {
+    grid-column: auto;
+  }
+
+  .response-modal-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .response-secondary-button,
+  .response-primary-button {
+    width: 100%;
+  }
+}
+
+.status-control-new {
+  border-color: #b8d5ef;
+}
+
+.status-control-under-investigation {
+  border-color: #e6c56b;
+  background: #fffaf0;
+}
+
+.status-control-under-investigation select {
+  color: #8a5b00;
+}
+
+.status-control-resolved {
+  border-color: #9bd5b1;
+  background: #f2fbf5;
+}
+
+.status-control-resolved select {
+  color: #207a42;
+}
+
+.report-card h3 {
+  margin: 0 0 4px;
+}
+
+.report-card-header p,
+.report-description {
+  margin: 0;
+  color: var(--crime-muted);
+}
+
+.report-card-quick-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.report-card-indicators {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.report-card-indicator {
+  padding: 4px 8px;
+  border: 1px solid var(--crime-border);
+  border-radius: 999px;
+  background: #f8fafc;
+  color: var(--crime-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.report-card-indicator-additional {
+  border-color: #e6c56b;
+  background: #fffaf0;
+  color: #8a5b00;
+}
+
+.report-details-button,
+.report-refresh-button {
+  padding: 9px 13px;
+  border: 1px solid var(--crime-blue);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--crime-blue);
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.report-details-button:hover,
+.report-refresh-button:hover {
+  background: #e8f1fa;
+}
+
+.report-unread-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #fff0ef;
+  color: #b9362f;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.reports-workspace-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.reports-workspace-heading h2 {
+  margin: 3px 0 4px;
+  color: var(--crime-text);
+}
+
+.reports-workspace-heading p:last-child {
+  color: var(--crime-muted);
+}
+
+.reports-category-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 22px 0 14px;
+  padding-bottom: 1px;
+  border-bottom: 1px solid var(--crime-border);
+}
+
+.reports-category-tabs button {
+  padding: 12px 14px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--crime-muted);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.reports-category-tabs button.active {
+  border-bottom-color: var(--crime-blue);
+  color: var(--crime-blue);
+}
+
+.reports-category-tabs button.active.received {
+  border-bottom-color: #207a42;
+  color: #207a42;
+}
+
+.reports-category-tabs span,
+.reports-result-count {
+  display: inline-flex;
+  min-width: 24px;
+  justify-content: center;
+  margin-left: 5px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #e8f1fa;
+  font-size: 0.76rem;
+}
+
+.reports-filter-panel {
+  display: grid;
+  grid-template-columns: minmax(220px, 2fr) repeat(5, minmax(120px, 1fr));
+  gap: 9px;
+  margin-bottom: 22px;
+  padding: 12px;
+  border: 1px solid var(--crime-border);
+  border-radius: 10px;
+  background: #fbfdff;
+}
+
+.reports-filter-panel input,
+.reports-filter-panel select {
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid var(--crime-border);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--crime-text);
+  font: inherit;
+}
+
+.received-response-list {
+  display: grid;
+  gap: 12px;
+}
+
+.received-response-card {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1.4fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 17px;
+  border: 1px solid #b9ddc3;
+  border-left: 4px solid #207a42;
+  border-radius: 10px;
+  background: #f7fcf8;
+}
+
+.received-response-card h3 {
+  margin: 5px 0 3px;
+  color: var(--crime-text);
+}
+
+.received-response-card p {
+  margin: 0;
+  color: var(--crime-muted);
+}
+
+.received-response-card dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.received-response-card dt {
+  color: var(--crime-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.received-response-card dd {
+  margin: 3px 0 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.received-response-preview {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  font-size: 0.87rem;
+  line-height: 1.45;
+}
+
+.report-details-modal {
+  width: min(960px, 100%);
+  max-height: min(900px, calc(100vh - 48px));
+  overflow: auto;
+  padding: 24px;
+  border: 1px solid #dbe7f1;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(9, 28, 48, 0.28);
+}
+
+.report-generated-date {
+  display: block;
+  margin-top: 5px;
+  color: var(--crime-muted);
+}
+
+.report-export-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--crime-border);
+}
+
+.report-details-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.report-details-modal-grid > section {
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid var(--crime-border);
+  border-radius: 9px;
+  background: #fbfdff;
+}
+
+.report-details-modal-grid h3 {
+  margin: 0 0 12px;
+  color: var(--crime-text);
+  font-size: 1rem;
+}
+
+.report-details-modal-wide {
+  grid-column: 1 / -1;
+}
+
+.report-details-additional-item {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 12px;
+  border: 1px solid #ecd99d;
+  border-radius: 7px;
+  background: #fffaf0;
+}
+
+.report-details-additional-item p {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.report-details-additional-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #8a5b00;
+}
+
+.report-details-additional-heading span {
+  color: var(--crime-muted);
+  font-size: 0.78rem;
+}
+
+.report-details-additional-evidence {
+  padding-top: 4px;
+  border-top: 1px solid #ecd99d;
+}
+
+.report-timeline {
+  display: grid;
+  gap: 13px;
+}
+
+.report-timeline > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.timeline-dot {
+  flex: 0 0 10px;
+  width: 10px;
+  height: 10px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: var(--crime-blue);
+  box-shadow: 0 0 0 4px #e8f1fa;
+}
+
+.timeline-dot-additional {
+  background: #d69e2e;
+  box-shadow: 0 0 0 4px #fff4d6;
+}
+
+.timeline-dot-received {
+  background: #207a42;
+  box-shadow: 0 0 0 4px #e7f7ed;
+}
+
+.report-timeline strong,
+.report-timeline time {
+  display: block;
+}
+
+.report-timeline time {
+  margin-top: 2px;
+  color: var(--crime-muted);
+  font-size: 0.78rem;
+}
+
+.report-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #e8f1fa;
+  color: var(--crime-blue);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: capitalize;
+}
+
+.status-under-investigation {
+  background: #fff4d6;
+  color: #9a6700;
+}
+
+.status-resolved {
+  background: #e7f7ed;
+  color: #207a42;
+}
+
+.status-new {
+  background: #e8f1fa;
+  color: var(--crime-blue);
+}
+
+.report-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.report-summary div {
+  padding: 10px;
+  background: var(--crime-bg);
+}
+
+.report-summary dt {
+  color: var(--crime-muted);
+  font-size: 0.8rem;
+}
+
+.report-summary dd {
+  margin: 4px 0 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.report-information-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.report-information-panel {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--crime-border);
+  border-radius: 10px;
+  background: #fbfdff;
+}
+
+.report-section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.report-section-heading h4 {
+  margin: 0;
+  color: var(--crime-text);
+}
+
+.report-section-heading span {
+  color: var(--crime-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.report-section-description {
+  margin: -2px 0 4px;
+  color: var(--crime-muted);
+  font-size: 0.88rem;
+}
+
+.report-contact-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.report-contact-list div {
+  min-width: 0;
+}
+
+.report-contact-list dt {
+  color: var(--crime-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.report-contact-list dd {
+  margin: 3px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.report-evidence-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.report-evidence-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid #dbe7f1;
+  border-radius: 7px;
+  background: #fff;
+}
+
+.report-evidence-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 38px;
+  height: 30px;
+  border-radius: 5px;
+  background: #e8f1fa;
+  color: var(--crime-blue);
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.report-evidence-details {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.report-evidence-details a,
+.report-evidence-details strong {
+  overflow-wrap: anywhere;
+}
+
+.report-evidence-details small {
+  color: var(--crime-muted);
+}
+
+.report-card details {
+  margin-top: 16px;
+  border-top: 1px solid var(--crime-border);
+  padding-top: 12px;
+}
+
+.report-card summary {
+  cursor: pointer;
+  color: var(--crime-blue);
+  font-weight: 600;
+}
+
+@media (max-width: 760px) {
+  .report-summary,
+  .report-information-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .reports-filter-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .reports-filter-panel input:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .received-response-card {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .received-response-card .report-details-button {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 520px) {
+  .report-summary,
+  .report-information-grid,
+  .report-contact-list {
+    grid-template-columns: 1fr;
+  }
+
+  .reports-workspace-heading,
+  .reports-category-tabs {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .reports-filter-panel,
+  .received-response-card,
+  .report-details-modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reports-filter-panel input:first-child,
+  .report-details-modal-wide {
+    grid-column: auto;
+  }
+
+  .received-response-card dl {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .report-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
+  }
+}
+
+.report-information {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.report-information h4 {
+  margin: 0 0 8px;
+  color: var(--crime-text);
+}
+
+.report-information-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.report-information-list div {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.35fr) 1fr;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--crime-bg);
+}
+
+.report-information-list dt {
+  color: var(--crime-muted);
+  font-weight: 600;
+}
+
+.report-information-list dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.empty-report-information {
+  margin: 0;
+  color: var(--crime-muted);
+}
+
+.report-card pre {
+  max-width: 100%;
+  overflow: auto;
+  margin: 12px 0 0;
+  padding: 12px;
+  background: #081b2d;
+  color: #fff;
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+}
+
+.dashboard-status {
+  margin-top: 0;
+  padding: 12px 16px;
+  border-left: 4px solid var(--crime-red);
+  background: #fff;
+  color: var(--crime-muted);
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  align-content: start;
+  max-width: none;
+  margin: 0;
+  padding: 40px clamp(20px, 5vw, 72px);
+  margin-bottom: 24px;
+}
+
+.stat-grid-single {
+  grid-template-columns: minmax(220px, 360px);
+  justify-content: start;
+}
+
+.stat-card,
+.dashboard-panel {
+  border: 1px solid var(--crime-border);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--crime-shadow);
+}
+
+.stat-card {
+  padding: 24px;
+}
+
+.stat-card p {
+  margin: 0 0 14px;
+  color: var(--crime-muted);
+}
+
+.stat-card strong {
+  color: var(--crime-text);
+  font-size: 2.5rem;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.dashboard-panel {
+  padding: 24px;
+}
+
+.dashboard-panel h2 {
+  margin: 0 0 18px;
+  color: var(--crime-text);
+  font-size: 1.2rem;
+}
+
+.dashboard-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dashboard-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--crime-border);
+}
+
+.empty-dashboard {
+  margin: 0;
+  color: var(--crime-muted);
+}
+
+.login-form label {
+  width: 60%;
+  margin-top: 10px;
+  color: var(--crime-text);
+  font-weight: 600;
+}
+
+.login-form input,
+.login-form select {
+  width: 60%;
+  padding: 7px;
+  border: 1px solid var(--crime-border);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--crime-text);
+  font: inherit;
+}
+.password-input-wrapper {
+  position: relative;
+  display: block;
+  width: 60%;
+}
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 42px;
+}
+.password-visibility-button {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  display: inline-grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  padding: 4px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--crime-muted);
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+.password-visibility-button:hover,
+.password-visibility-button:focus-visible {
+  background: var(--crime-bg);
+  color: var(--crime-blue-dark);
+}
+.password-visibility-button svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.login-button {
+  width: 15%;
+  margin-top: 20px;
+  padding: 2px 4px;
+  font-size: 0.6rem;
+}
+
+.flag-card {
+  display: grid;
+  width: 88px;
+  aspect-ratio: 4 / 3;
+  border-radius: 0;
+  overflow: hidden;
+  border: 2px solid rgba(255,255,255,0.48);
+  background: var(--crime-white);
+}
+
+.flag-card img,
+.header-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.flag-stripe {
+  height: 33%;
+}
+
+.flag-green {
+  background: #673ae2;
+}
+
+.flag-red {
+  background: #dc1f26;
+}
+
+.flag-emblem {
+  background: radial-gradient(circle at center, #ffffff 15%, #0a3f6a 16%, transparent 18%),
+    radial-gradient(circle at 50% 55%, #ffffff 12%, #0a3f6a 13%, transparent 14%);
+}
+
+.header-text {
+  text-align: left;
+}
+
+.police-label {
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 13px;
+  color: rgba(255,255,255,0.85);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 2.4vw, 3rem);
+  line-height: 1.05;
+}
+
+.page-nav {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin: 10px 0 0;
+  padding: 0 24px 0 0;
+}
+
+.home-page-nav {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding-right: 24px;
+}
+
+.nav-arrow {
+  width: 46px;
+  height: 46px;
+  border: none;
+  border-radius: 50%;
+  background: var(--crime-blue);
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(29, 110, 200, 0.2);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.nav-arrow:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.nav-arrow:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.header-row {
+  position: sticky;
+  top: 155px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin: 8px 0 0;
+  flex-wrap: wrap;
+  background: #0b2f5a;
+  padding: 12px 24px;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  box-shadow: var(--crime-shadow);
+}
+
+.page-links,
+.language-select {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.page-links {
+  flex: 1 1 auto;
+  justify-content: flex-start;
+  padding-left: 20px;
+}
+
+.language-select {
+  min-width: 220px;
+  justify-content: flex-end;
+}
+
+.page-links a,
+.language-select label {
+  color: var(--crime-white);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.page-links a:hover {
+  opacity: 0.85;
+}
+
+.language-select select {
+  border: 1px solid rgba(255,255,255,0.9);
+  background: #ffffff;
+  color: #0b2f5a;
+  padding: 8px 12px;
+  border-radius: 4px;
+  min-width: 160px;
+  appearance: auto;
+}
+
+.language-select select:hover {
+  opacity: 0.95;
+}
+
+.language-select select option {
+  color: #0b2f5a;
+  background: #ffffff;
+}
+
+.content-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin-top: 24px;
+  align-items: start;
+}
+
+.hero-section {
+  position: relative;
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: var(--crime-shadow);
+}
+
+.hero-image {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  min-height: 380px;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: linear-gradient(180deg, rgba(3,54,115,0.24), rgba(0,0,0,0.48));
+  color: var(--crime-white);
+  font-size: clamp(1.5rem, 2.4vw, 2.25rem);
+  font-weight: 700;
+  text-align: center;
+}
+
+.info-section {
+  background: var(--crime-surface);
+  border: 1px solid var(--crime-border);
+  border-radius: 0;
+  padding: 32px;
+  box-shadow: var(--crime-shadow);
+}
+
+.info-section h1,
+.info-section h2,
+.info-section h3 {
+  font-family: inherit;
+  color: var(--crime-text);
+  margin: 0;
+}
+
+.info-section h1 {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+
+.info-section h2 {
+  font-size: 1.2rem;
+  margin: 0 0 20px;
+  color: var(--crime-muted);
+}
+
+.info-section h3 {
+  font-size: 1rem;
+  margin-top: 22px;
+}
+
+.info-section p {
+  margin: 12px 0 0;
+  line-height: 1.8;
+  color: var(--crime-muted);
+}
+
+.info-section a {
+  color: var(--crime-blue);
+  text-decoration: underline;
+}
+
+.alert {
+  margin: 22px 0 0;
+  padding: 16px 18px;
+  border-left: 4px solid var(--crime-red);
+  background: rgba(198, 35, 44, 0.1);
+  color: var(--crime-text);
+}
+
+.info-actions,
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  margin: 16px 0 8px;
+}
+
+.report-choice-card {
+  margin-top: 16px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 1px solid var(--crime-border);
+  background: rgba(255,255,255,0.85);
+}
+
+.report-choice-card h3 {
+  margin: 0 0 6px;
+  color: var(--crime-text);
+}
+
+.report-choice-card p {
+  margin: 0;
+  color: var(--crime-muted);
+}
+
+.start-reporting {
+  border: none;
+  background: linear-gradient(135deg, #1d6ec8 0%, #0f4d8f 100%);
+  color: var(--crime-white);
+  padding: 14px 26px;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(29, 110, 200, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.start-reporting:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 28px rgba(29, 110, 200, 0.24);
+}
+
+.start-reporting.secondary {
+  background: linear-gradient(135deg, #6c757d, #4f5964);
+}
+
+.start-reporting.alt {
+  background: linear-gradient(135deg, #1d6ec8, #0f4c81);
+}
+
+.app-footer {
+  margin-top: 16px;
+  background-image: linear-gradient(rgba(220, 237, 255, 0.85), rgba(220, 237, 255, 0.85)), url('../src/images 1.jpg');
+  background-size: cover;
+  background-position: center;
+  padding: 24px 32px;
+  border-radius: 0;
+  color: var(--crime-text);
+}
+
+.footer-content {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.app-footer h2 {
+  margin: 0 0 12px;
+  font-size: 1.5rem;
+}
+
+.app-footer p {
+  margin: 8px 0;
+  color: var(--crime-muted);
+}
+
+.app-footer a {
+  color: var(--crime-blue);
+  text-decoration: none;
+}
+
+@media (max-width: 840px) {
+  .dashboard-header,
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+  }
+
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-sidebar {
+    min-height: auto;
+  }
+
+  .login-role-options,
+  .login-form label,
+  .login-form input,
+  .login-form select,
+  .password-input-wrapper {
+    width: 100%;
+  }
+
+  .admin-assignment-form {
+    width: 100%;
+    min-height: auto;
+    padding: 32px 24px;
+  }
+
+  .admin-assignment-panel {
+    width: 100%;
+    left: 0;
+  }
+
+  .admin-filter-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .admin-filter-row .dashboard-search,
+  .admin-filter-row .admin-subcity-filter {
+    margin-bottom: 18px;
+  }
+
+  .report-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-filters,
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-grid .analytics-panel:not(.analytics-panel-wide) {
+    grid-column: auto;
+  }
+
+  .analytics-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-trend-row {
+    grid-template-columns: 56px 1fr;
+  }
+
+  .analytics-trend-row small {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .analytics-panel-wide {
+    grid-column: auto;
+  }
+
+  .report-export-actions {
+    justify-content: stretch;
+  }
+
+  .report-export-actions button {
+    flex: 1;
+  }
+
+  .app-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .header-text {
+    width: 100%;
+  }
+}
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  body.printing-report * {
+    visibility: hidden !important;
+  }
+
+  body.printing-report .report-details-modal,
+  body.printing-report .report-details-modal * {
+    visibility: visible !important;
+  }
+
+  body.printing-report .response-modal-backdrop {
+    position: static;
+    display: block;
+    padding: 0;
+    background: #fff;
+  }
+
+  body.printing-report .report-details-modal {
+    width: 100%;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  body.printing-report .response-modal-close,
+  body.printing-report .report-export-actions,
+  body.printing-report .report-modal-controls {
+    display: none !important;
+  }
+
+  body.printing-report .report-details-modal-grid {
+    gap: 10px;
+  }
+
+  body.printing-report .report-details-modal-grid > section {
+    break-inside: avoid;
+    box-shadow: none;
+  }
+}

@@ -1,0 +1,3405 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Start Reporting</title>
+    <link rel="stylesheet" href="/src/index.css">
+    <link rel="stylesheet" href="/src/App.css">
+    <style>
+      body { font-family: inherit; padding: 0 24px 24px; max-width: 920px; margin: 0 auto; background: var(--crime-bg); color: var(--crime-text); }
+      .report-main { margin-top: 12px; }
+      label { display: block; margin-top: 12px; font-weight: 600; }
+      input, select, textarea { width: 100%; padding: 8px; margin-top: 6px; box-sizing: border-box; border: 1px solid var(--crime-border); border-radius: 6px; background: white; }
+      .row { display: flex; gap: 12px; }
+      .row > div { flex: 1; }
+      .actions { margin-top: 18px; }
+      .error { color: var(--crime-red); }
+      h1 { color: var(--crime-text); }
+      .form-card { background: var(--crime-surface); padding: 20px; border: 1px solid var(--crime-border); border-radius: 6px; box-shadow: var(--crime-shadow); }
+      .choice-card { margin-bottom: 16px; padding: 16px; border: 1px solid var(--crime-border); border-radius: 8px; background: rgba(255,255,255,0.9); }
+      .choice-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+      .choice-buttons label { display: inline-flex; align-items: center; gap: 10px; }
+      .choice-buttons input { margin: 0; }
+      .choice-button { padding: 10px 16px; border: none; border-radius: 999px; cursor: pointer; background: #1d6ec8; color: white; }
+      .choice-button.active { background: #0b2f5a; }
+      .incident-options { display: grid; gap: 16px; margin-top: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+      .incident-card { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start; border: 1px solid rgba(29,110,200,0.16); border-radius: 14px; padding: 18px; background: #ffffff; cursor: pointer; box-shadow: 0 10px 20px rgba(15, 40, 80, 0.06); transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+      .incident-card:hover { transform: translateY(-2px); border-color: rgba(29,110,200,0.3); box-shadow: 0 14px 28px rgba(15, 40, 80, 0.08); }
+      .incident-card input { margin: 4px 0 0 0; flex-shrink: 0; accent-color: #1d6ec8; width: 18px; height: 18px; }
+      .incident-card-content { display: flex; flex-direction: column; gap: 6px; }
+      .incident-card strong { margin: 0; font-size: 1rem; color: #102a43; }
+      .textarea-limit { display: block; margin-top: 4px; color: var(--crime-muted); font-size: 0.85rem; text-align: right; }
+      .report-id { margin: 18px 0 0; font-size: 1.1rem; font-weight: 700; color: var(--crime-text); }
+      .report-status { min-height: 1.5em; margin: 12px 0 0; color: var(--crime-muted); }
+      .confirmation-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+      .date-error { display: none; margin: 4px 0 8px; color: var(--crime-red); font-size: 0.85rem; }
+      .confirmation-check { display: flex; align-items: flex-start; gap: 8px; margin-top: 16px; font-weight: 600; }
+      .confirmation-check input { width: auto; margin: 3px 0 0; }
+      .confirmation-error { display: none; margin: 6px 0 0; color: var(--crime-red); font-size: 0.85rem; }
+      .incident-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 12px; }
+      .incident-field label { margin-top: 0; }
+      .incident-field input, .incident-field select { margin-top: 6px; }
+      .tracking-card { max-width: 760px; margin: 0 auto; padding: 28px 24px; background: var(--crime-surface); border: 1px solid var(--crime-border); border-radius: 12px; box-shadow: var(--crime-shadow); }
+      .tracking-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 24px; margin: 24px 0; text-align: left; }
+      .tracking-detail { margin: 0; }
+      .tracking-detail dt { color: var(--crime-muted); font-size: 0.85rem; font-weight: 600; }
+      .tracking-detail dd { margin: 4px 0 0; font-weight: 700; overflow-wrap: anywhere; }
+      .progress-title { margin: 24px 0 10px; text-align: left; }
+      .progress-track { height: 12px; overflow: hidden; background: var(--crime-border); border-radius: 999px; }
+      .progress-bar { height: 100%; width: 0; background: var(--crime-blue); border-radius: inherit; transition: width 0.3s ease; }
+      .progress-label { margin: 8px 0 0; color: var(--crime-muted); text-align: left; }
+      .tracking-lookup { margin: 20px 0 24px; text-align: left; }
+      .tracking-lookup label { margin-top: 0; }
+      .tracking-lookup-actions { display: flex; gap: 10px; align-items: flex-start; }
+      .tracking-lookup-actions input { flex: 1; margin-top: 6px; }
+      .tracking-lookup-actions button { white-space: nowrap; }
+      .tracking-lookup-error { display: none; margin: 6px 0 0; color: var(--crime-red); }
+      .additional-information-card { display: none; margin-top: 24px; padding: 18px; border: 1px solid #e6c56b; border-radius: 10px; background: #fffaf0; text-align: left; }
+      .additional-information-card h2 { margin: 0 0 10px; color: #8a5b00; font-size: 1.1rem; }
+      .additional-information-request { margin: 0 0 12px; padding: 12px; border-left: 3px solid #d69e2e; background: #fff; white-space: pre-wrap; }
+      .additional-information-card textarea { min-height: 110px; resize: vertical; }
+      .additional-information-card input[type="file"] { background: #fff; }
+      .additional-information-status { min-height: 1.3em; margin: 8px 0 0; color: var(--crime-muted); }
+      .additional-information-status.error { color: var(--crime-red); }
+      .additional-information-status.success { color: #207a42; }
+      @media (max-width: 600px) { .incident-row { grid-template-columns: 1fr; } }
+      @media (max-width: 600px) { .tracking-details { grid-template-columns: 1fr; } }
+      .page-nav {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin: 18px 0 8px;
+      }
+      .nav-arrow {
+        width: 46px;
+        height: 46px;
+        border: none;
+        border-radius: 50%;
+        background: #1d6ec8;
+        color: #fff;
+        font-size: 1.5rem;
+        cursor: pointer;
+        box-shadow: 0 8px 18px rgba(29,110,200,0.2);
+        transition: transform 0.2s ease, opacity 0.2s ease;
+      }
+      .nav-arrow:hover:not(:disabled) { transform: translateY(-1px); }
+      .nav-arrow:disabled { opacity: 0.45; cursor: not-allowed; }
+    </style>
+  </head>
+  <body>
+    <header
+      class="app-header"
+      style="background-image: linear-gradient(rgba(11,47,90,0.8), rgba(11,47,90,0.8)), url('/src/images 1.jpg'); background-size: cover; background-position: center;"
+    >
+      <div class="flag-card" aria-label="Sidama region flag">
+        <img src="/src/images 1.jpg" alt="Sidama region flag" class="header-icon" />
+      </div>
+      <div class="header-text">
+        <p class="police-label">Hawassa City Police</p>
+        <h1>Hawassa City Administration Crime Reporting System</h1>
+      </div>
+    </header>
+
+    <div class="page-nav" aria-label="Page navigation">
+      <button id="navBackBtn" type="button" class="nav-arrow" aria-label="Go back">←</button>
+      <button id="navForwardBtn" type="button" class="nav-arrow" aria-label="Go forward">→</button>
+    </div>
+
+    <main class="report-main">
+      <div id="confirmationSection" style="display:none; text-align:center; padding:32px 20px; background:var(--crime-surface); border:1px solid var(--crime-border); border-radius:12px; box-shadow:var(--crime-shadow);">
+        <h1 style="margin-bottom:16px;">Thank you for reporting.</h1>
+        <p style="margin:0; font-size:1.1rem; line-height:1.7; color:var(--crime-text);">
+          Your report has been received by the Hawassa City Administration Police.
+        </p>
+          <p id="reportId" class="report-id"></p>
+          <p id="reportStatus" class="report-status" aria-live="polite"></p>
+          <div class="confirmation-actions">
+            <button id="trackReportButton" type="button" class="start-reporting">Track report</button>
+            <button id="addAnotherReportButton" type="button" class="choice-button">Add another report</button>
+          </div>
+      </div>
+
+      <section id="trackingSection" style="display:none" aria-live="polite">
+        <div class="tracking-card">
+          <h1 id="trackingTitle">Track report</h1>
+          <p id="trackingMessage" class="report-status"></p>
+          <form id="trackingLookupForm" class="tracking-lookup" novalidate>
+              <label id="trackingInputLabel" for="trackingInput">Enter Report ID or tracking number</label>
+            <div class="tracking-lookup-actions">
+              <input id="trackingInput" type="text" placeholder="Enter tracking number" inputmode="numeric" autocomplete="off" required />
+              <button id="trackingLookupButton" type="submit" class="start-reporting">Search</button>
+            </div>
+            <small id="trackingLookupError" class="tracking-lookup-error" role="alert"></small>
+          </form>
+          <dl class="tracking-details">
+            <div class="tracking-detail"><dt id="trackingIdLabel">Report ID</dt><dd id="trackingIdValue">-</dd></div>
+            <div class="tracking-detail"><dt id="trackingStatusLabel">Status</dt><dd id="trackingStatusValue">-</dd></div>
+            <div class="tracking-detail"><dt id="trackingDateLabel">Submission date and time</dt><dd id="trackingDateValue">-</dd></div>
+            <div class="tracking-detail"><dt id="trackingIncidentLabel">Incident type</dt><dd id="trackingIncidentValue">-</dd></div>
+            <div class="tracking-detail"><dt id="trackingSubcityLabel">Sub-city</dt><dd id="trackingSubcityValue">-</dd></div>
+            <div class="tracking-detail"><dt id="trackingKebeleLabel">Kebele</dt><dd id="trackingKebeleValue">-</dd></div>
+          </dl>
+          <h2 id="trackingProgressTitle" class="progress-title">Report progress</h2>
+          <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div id="trackingProgressBar" class="progress-bar"></div>
+          </div>
+          <p id="trackingProgressLabel" class="progress-label">-</p>
+          <section id="additionalInformationCard" class="additional-information-card" aria-live="polite">
+            <h2 id="additionalInformationTitle">Additional Information Requested</h2>
+            <div id="additionalInformationRequest" class="additional-information-request"></div>
+            <form id="additionalInformationForm" novalidate>
+              <label id="additionalInformationResponseLabel" for="additionalInformationResponse">Additional Information</label>
+              <textarea id="additionalInformationResponse" maxlength="5000" required></textarea>
+              <label id="additionalInformationEvidenceLabel" for="additionalInformationEvidence">Supporting Evidence (Optional)</label>
+              <input id="additionalInformationEvidence" type="file" accept="image/*,audio/*,video/*,application/pdf" multiple />
+              <button id="additionalInformationSubmit" type="submit" class="start-reporting">Submit Additional Information</button>
+              <p id="additionalInformationStatus" class="additional-information-status" aria-live="polite"></p>
+            </form>
+          </section>
+          <div class="confirmation-actions">
+            <button id="trackingBackButton" type="button" class="choice-button">Back to confirmation</button>
+          </div>
+        </div>
+      </section>
+
+      <div id="englishSection">
+        <h1 id="pageTitle">Personal Information</h1>
+        <p id="pageSubtitle" style="margin-top:8px; margin-bottom:18px; font-weight:600">
+          Report anonymously with email only, or add your information below.
+        </p>
+
+        <div class="choice-card">
+          <strong id="choiceTitle">Choose reporting type</strong>
+          <div class="choice-buttons">
+            <button type="button" class="choice-button" id="anonymousBtn">Report anonymously</button>
+            <button type="button" class="choice-button active" id="contactBtn">Add your information</button>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <form id="reportFormEn" novalidate>
+            <div id="anonymousSectionEn" style="display:none">
+              <label for="anonymousEmailEn">Email address</label>
+              <input id="anonymousEmailEn" name="anonymousEmailEn" type="email" required />
+            </div>
+
+            <div id="contactSectionEn">
+              <label for="fullNameEn">Full name</label>
+              <input id="fullNameEn" name="fullNameEn" type="text" required />
+
+              <div class="row">
+                <div>
+                  <label for="emailEn">Email</label>
+                  <input id="emailEn" name="emailEn" type="email" required />
+                </div>
+                <div>
+                  <label for="phoneEn">Phone number</label>
+                  <input id="phoneEn" name="phoneEn" type="tel" inputmode="numeric" pattern="^(09|07)\d{8}$" required />
+                </div>
+              </div>
+
+              <div class="row">
+                <div>
+                  <label for="sexEn">Sex</label>
+                  <select id="sexEn" name="sexEn" required>
+                    <option value="">Select</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="ageEn">Age</label>
+                  <input id="ageEn" name="ageEn" type="number" min="0" required />
+                </div>
+              </div>
+
+              <label for="subcityEn">Address (Sub-city)</label>
+              <select id="subcityEn" name="subcityEn" required>
+                <option value="">Select Sub-city</option>
+                <option>Tabor</option>
+                <option>Addis ketema</option>
+                <option>Hayek dar</option>
+                <option>Mehal</option>
+                <option>Bahil adarash</option>
+                <option>Misrak</option>
+                <option>Menahariya</option>
+                <option>Tulla (Hawela-tula)</option>
+              </select>
+
+              <label for="kebeleEn">Kebele</label>
+              <select id="kebeleEn" name="kebeleEn" required>
+                <option value="">Select Kebele</option>
+              </select>
+            </div>
+
+            <p id="errorEn" class="error" style="display:none"></p>
+
+            <div class="actions">
+              <button id="submitButtonEn" type="submit" class="start-reporting">Continue</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div id="amharicSection" style="display:none">
+        <h1 id="pageTitleAm">የግል መረጃ</h1>
+        <p id="pageSubtitleAm" style="margin-top:8px; margin-bottom:18px; font-weight:600">
+          ያለ ግል መረጃ በኢሜይል ብቻ ወይም ከዚህ በታች የመረጃዎን ክፍል በመሙላት ሪፖርት ያድርጉ።
+        </p>
+
+        <div class="choice-card">
+          <strong id="choiceTitleAm">የሪፖርት አይነት ይምረጡ</strong>
+          <div class="choice-buttons">
+            <button type="button" class="choice-button" id="anonymousBtnAm">ያለ ግል መረጃ ሪፖርት ያድርጉ</button>
+            <button type="button" class="choice-button active" id="contactBtnAm">መረጃዎን ይጨምሩ</button>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <form id="reportFormAm" novalidate>
+            <div id="anonymousSectionAm" style="display:none">
+              <label for="anonymousEmailAm">የኢሜይል አድራሻ</label>
+              <input id="anonymousEmailAm" name="anonymousEmailAm" type="email" required />
+            </div>
+
+            <div id="contactSectionAm">
+              <label for="fullNameAm">ሙሉ ስም</label>
+              <input id="fullNameAm" name="fullNameAm" type="text" required />
+
+              <div class="row">
+                <div>
+                  <label for="emailAm">ኢሜይል</label>
+                  <input id="emailAm" name="emailAm" type="email" required />
+                </div>
+                <div>
+                  <label for="phoneAm">ስልክ ቁጥር</label>
+                  <input id="phoneAm" name="phoneAm" type="tel" inputmode="numeric" pattern="^(09|07)\d{8}$" required />
+                </div>
+              </div>
+
+              <div class="row">
+                <div>
+                  <label for="sexAm">ፆታ</label>
+                  <select id="sexAm" name="sexAm" required>
+                    <option value="">ይምረጡ</option>
+                    <option>ወንድ</option>
+                    <option>ሴት</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="ageAm">ዕድሜ</label>
+                  <input id="ageAm" name="ageAm" type="number" min="0" required />
+                </div>
+              </div>
+
+              <label for="subcityAm">አድራሻ (ክፍለ ከተማ)</label>
+              <select id="subcityAm" name="subcityAm" required>
+                <option value="">ክፍለ ከተማ ይምረጡ</option>
+                <option>ታቦር</option>
+                <option>አዲስ ከተማ</option>
+                <option>ሃይቅ ዳር</option>
+                <option>መሃል</option>
+                <option>ባህል አዳራሽ</option>
+                <option>ምስራቅ</option>
+                <option>መናሃሪያ</option>
+                <option>ቱላ</option>
+              </select>
+
+              <label for="kebeleAm">ቀበሌ</label>
+              <select id="kebeleAm" name="kebeleAm" required>
+                <option value="">ቀበሌ ይምረጡ</option>
+              </select>
+            </div>
+
+            <p id="errorAm" class="error" style="display:none"></p>
+
+            <div class="actions">
+              <button id="submitButtonAm" type="submit" class="start-reporting">ቀጥል</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <div id="incidentSection" style="display:none">
+      <h1 id="incidentTitle">Select incident type</h1>
+      <p id="incidentSubtitle" style="margin-top:8px; margin-bottom:18px; font-weight:600">Choose one of the incident types below.</p>
+      <div class="form-card">
+        <div id="incidentContentEn" class="incident-options">
+          <label class="incident-card">
+            <input type="radio" name="incidentType" value="Theft" />
+            <div class="incident-card-content">
+              <strong>Theft</strong>
+              <span>Unauthorized taking of property with intent to permanently deprive the owner.</span>
+            </div>
+          </label>
+          <label class="incident-card">
+            <input type="radio" name="incidentType" value="Physical assault" />
+            <div class="incident-card-content">
+              <strong>Physical assault</strong>
+              <span>Physical harm or threat of harm against another person.</span>
+            </div>
+          </label>
+          <label class="incident-card">
+            <input type="radio" name="incidentType" value="Illegal trade and drug trafficking" />
+            <div class="incident-card-content">
+              <strong>Illegal trade and drug trafficking</strong>
+              <span>Sale or distribution of prohibited goods, including illegal narcotics.</span>
+            </div>
+          </label>
+          <label class="incident-card">
+            <input type="radio" name="incidentType" value="Fraud and scam" />
+            <div class="incident-card-content">
+              <strong>Fraud and scam</strong>
+              <span>Deceptive schemes or false representation to gain money or property.</span>
+            </div>
+          </label>
+          <label class="incident-card">
+            <input type="radio" name="incidentType" value="Missing person" />
+            <div class="incident-card-content">
+              <strong>Missing person</strong>
+              <span>Report of an individual whose whereabouts are unknown and may be at risk.</span>
+            </div>
+          </label>
+          <label class="incident-card">
+            <input type="radio" name="incidentType" value="Family and marriage related crimes" />
+            <div class="incident-card-content">
+              <strong>Family and marriage related crimes</strong>
+              <span>Offenses involving domestic disputes, child protection, or marriage issues.</span>
+            </div>
+          </label>
+          <label class="incident-card">
+            <input type="radio" name="incidentType" value="Sexual violence" />
+            <div class="incident-card-content">
+              <strong>Sexual violence</strong>
+              <span>Sexual assault, harassment, or any non-consensual sexual conduct.</span>
+            </div>
+          </label>
+          <label class="incident-card">
+            <input type="radio" name="incidentType" value="Lost property" />
+            <div class="incident-card-content">
+              <strong>Lost property</strong>
+              <span>Property reported missing or misplaced and not known to be stolen.</span>
+            </div>
+          </label>
+          <label class="incident-card">
+            <input type="radio" name="incidentType" value="Other" />
+            <div class="incident-card-content">
+              <strong>Other</strong>
+              <span>Any incident type not listed above that should be reported.</span>
+            </div>
+          </label>
+        </div>
+        <div id="incidentContentAm" class="incident-options" style="display:none">
+          <label class="incident-card">
+            <input type="radio" name="incidentType" value="Theft" />
+            <div class="incident-card-content">
+              <strong>ስርቆት</strong>
+              <span>የሌላን ሰው ንብረት ያላግባብ መውሰድ።</span>
+            </div>
+          </label>
+          <label class="incident-card">
+            <input type="radio" name="incidentType" value="አካላዊ ጥቃት" />
+            <div class="incident-card-content">
+              <strong>አካላዊ ጥቃት</strong>
+              <span>በሰው ላይ አካላዊ ጉዳት ማድረግ።</span>
+            </div>
+          </label>
+          <label class="incident-card">
+            <input type="radio" name="incidentType" value="ሕጋዊ ያልሆነ ንግድ እና የአደንዛዥ እጽ ሽያጭ" />
+            <div class="incident-card-content">
+              <strong>ሕጋዊ ያልሆነ ንግድ እና የአደንዛዥ እጽ ሽያጭ</strong>
+              <span>የተከለከለ ንግድ እና የአደንዛዥ እጽ ሽያጭ.</span>
+            </div>
+          </label>
+          <label class="incident-card">
+            <input type="radio" name="incidentType" value="Fraud and scam" />
+            <div class="incident-card-content">
+              <strong>ማታለል እና ማጭበርበር</strong>
+              <span>የለላን ሰው ገንዘብ ወይም ንብረትን ለማግኘት የሚደረግ ማታለል።</span>
+            </div>
+          </label>
+          <label class="incident-card">
+            <input type="radio" name="incidentType" value="የጠፋ ሰው" />
+            <div class="incident-card-content">
+              <strong>የጠፋ ሰው</strong>
+              <span>አድራሻው ያልታወቀ እና ለአደጋ ሊጋለጥ የሚችል ግለሰብን በተመለከተ የሚቀርብ ሪፖርት።</span>
+            </div>
+          </label>
+          <label class="incident-card">
+            <input type="radio" name="incidentType" value="Family and marriage related crimes" />
+            <div class="incident-card-content">
+              <strong>ከቤተሰብ እና ከጋብቻ ጋር የተያያዙ ወንጀሎች</strong>
+              <span>የቤተሰብ አለመግባባቶችን፣ የህፃናት ጥበቃን ወይም የጋብቻ ጉዳዮችን የሚያካቱ ወንጀሎች</span>
+            </div>
+          </label>
+          <label class="incident-card">
+            <input type="radio" name="incidentType" value="Sexual violence" />
+            <div class="incident-card-content">
+              <strong>ፆታዊ ጥቃት</strong>
+              <span>የጾታ ጥቃት፣ ትንኮሳ ወይም ፈቃደኝነት የሌለበት የጾታ ግንኙነት ድርጊት።</span>
+            </div>
+          </label>
+          <label class="incident-card">
+            <input type="radio" name="incidentType" value="Lost property" />
+            <div class="incident-card-content">
+              <strong>የጠፋ ንብረት</strong>
+              <span>ባለቤቱ የማይታወቀው ወይም የተጣለ ንብረት.</span>
+            </div>
+          </label>
+          <label class="incident-card">
+            <input type="radio" name="incidentType" value="ሌላ" />
+            <div class="incident-card-content">
+              <strong>ሌላ</strong>
+              <span>ከላይ ያልተጠቀሱ እና ሪፖርት መደረግ ያለባቸው ማናቸውም የድርጊት ዓይነቶች ያስገቡ።</span>
+            </div>
+          </label>
+        </div>
+        <div class="actions">
+          <button id="incidentContinueButton" type="button" class="start-reporting">Continue</button>
+        </div>
+      </div>
+    </div>
+    <div id="familyDetailsSectionAm" style="display:none">
+      <h1>ከቤተሰብ እና ከጋብቻ ጋር የተያያዙ ወንጀሎች</h1>
+      <p style="margin-top:8px; margin-bottom:18px; font-weight:600">እባክዎ ስለ የቤተሰብ ወይም የጋብቻ ጉዳይ የሚከተሉትን ጥያቄዎች ይመልሱ።</p>
+      <div class="form-card">
+        <form id="familyFormAm" novalidate>
+          <div class="choice-card"><strong>የክስ ጥያቄዎች</strong></div>
+
+          <label>ይህ ከቤት ውስጥ ጥቃት ወይም ከአካላዊ ጥቃት ጋር የተያያዘ ነው?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="domesticViolenceAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="domesticViolenceAm" value="No" required /> አይ</label>
+          </div>
+
+          <label>ይህ ከአስገዳጅ ጋብቻ፣ ከአካለ መጠን ያልደረሰ ጋብቻ ወይም ከፍቺ ጉዳዮች ጋር የተያያዘ ነው?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="forcedMarriageAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="forcedMarriageAm" value="No" required /> አይ</label>
+          </div>
+
+          <label>በዚህ ውስጥ የተሳተፉ ወይም ለአደጋ የተጋለጡ ልጅ/ልጆች አሉ?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="childrenInvolvedAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="childrenInvolvedAm" value="No" required /> አይ</label>
+          </div>
+
+          <label>ይህ ቀደም ብሎ ተከስቶ ያውቃል?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="happenedBeforeAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="happenedBeforeAm" value="No" required /> አይ</label>
+          </div>
+
+          <label>በአሁኑ ሰዓት እርስዎ (ወይም ተጎጂው) የደህንነት ስጋት ይሰማዎታል?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="feelUnsafeAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="feelUnsafeAm" value="No" required /> አይ</label>
+          </div>
+
+          <label>አስቸኳይ ጥበቃ ወይም ድጋፍ ይፈልጋሉ?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="needProtectionAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="needProtectionAm" value="No" required /> አይ</label>
+          </div>
+
+          <label for="familyWhatHappenedAm">በእርግጥ ምንድን ነው የተከሰተው? (እባክዎ ስለ ሁኔታው/ስለ ድርጊቱ ያብራሩ)</label>
+          <textarea id="familyWhatHappenedAm" name="familyWhatHappenedAm" rows="4" required></textarea>
+
+          <label for="familyWhoInvolvedAm">በዚህ ውስጥ ማን ተሳታፊ ነው? እንዲሁም ከተጎጂው ጋር ያላቸው ዝምድና/ግንኙነት ምንድን ነው?</label>
+          <textarea id="familyWhoInvolvedAm" name="familyWhoInvolvedAm" rows="3" required></textarea>
+
+          <label for="familyAdditionalAm">ፖሊስ እንዲያውቀው የሚፈልጉት ተጨማሪ መረጃ አለ?</label>
+          <textarea id="familyAdditionalAm" name="familyAdditionalAm" rows="3"></textarea>
+
+          <label>ማስረጃ አለዎት?</label>
+          <input id="familyEvidenceAm" name="familyEvidenceAm" type="file" accept="image/*,audio/*,video/*" multiple />
+
+          <p id="familyErrorAm" class="error" style="display:none"></p>
+
+          <div class="actions">
+            <button id="submitFamilyDetailsAm" type="submit" class="start-reporting">አቅርብ</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="missingDetailsSection" style="display:none">
+      <h1>Missing person</h1>
+      <p style="margin-top:8px; margin-bottom:18px; font-weight:600">
+        Please answer the questions below about the missing person.
+      </p>
+      <div class="form-card">
+        <form id="missingForm" novalidate>
+          <div class="choice-card">
+            <strong>Incident follow-up</strong>
+          </div>
+
+          <label>Is the missing person a child (under 18)?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="isChild" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="isChild" value="No" required /> No</label>
+          </div>
+
+          <label>Has the person been missing for more than 24 hours?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="missingOver24" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="missingOver24" value="No" required /> No</label>
+          </div>
+
+          <label>Does the person have any medical condition or disability?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="hasMedicalCondition" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="hasMedicalCondition" value="No" required /> No</label>
+          </div>
+
+          <label>Was the disappearance sudden or after an argument/conflict?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="disappearanceType" value="Sudden" required /> Sudden</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="disappearanceType" value="AfterArgument" required /> After argument/conflict</label>
+          </div>
+
+          <label>Have you already checked hospitals, friends, or relatives?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="checkedPlaces" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="checkedPlaces" value="No" required /> No</label>
+          </div>
+
+          <label>Do you suspect foul play?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="suspectFoulPlay" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="suspectFoulPlay" value="No" required /> No</label>
+          </div>
+
+          <label for="missingPersonInfo">Full name, age, gender, and physical description of the missing person (height, clothes last seen wearing, distinctive marks, etc.)</label>
+          <textarea id="missingPersonInfo" name="missingPersonInfo" rows="4" required></textarea>
+
+          <label for="lastSeen">When and where was the person last seen?</label>
+          <textarea id="lastSeen" name="lastSeen" rows="3" required></textarea>
+
+          <label for="disappearanceCircumstances">Please describe the circumstances of the disappearance and any other important information.</label>
+          <textarea id="disappearanceCircumstances" name="disappearanceCircumstances" rows="4" required></textarea>
+
+          <label>Do you have a picture of the missing person?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="hasPicture" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="hasPicture" value="No" required /> No</label>
+          </div>
+          <label for="missingPicture">Upload picture of the missing person</label>
+          <input id="missingPicture" name="missingPicture" type="file" accept="image/*" />
+
+          <p id="missingError" class="error" style="display:none"></p>
+
+          <div class="actions">
+            <button id="submitMissingDetails" type="submit" class="start-reporting">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="missingDetailsSectionAm" style="display:none">
+      <h1>የጠፋ ሰው</h1>
+      <p style="margin-top:8px; margin-bottom:18px; font-weight:600">እባክዎ የጠፋውን ሰው የሚከተሉትን ጥያቄዎች ይመልሱ።</p>
+      <div class="form-card">
+        <form id="missingFormAm" novalidate>
+          <div class="choice-card"><strong>የክስ ጥያቄዎች</strong></div>
+
+          <label>የጠፋው ሰው ሕፃን ነው (ከ18 ዓመት በታች)?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="isChildAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="isChildAm" value="No" required /> አይ</label>
+          </div>
+
+          <label>ከጠፋ ከ24 ሰዓታት በላይ ሆኖታል?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="missingOver24Am" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="missingOver24Am" value="No" required /> አይ</label>
+          </div>
+
+          <label>የጠፋው ሰዉ የጤና እክል ወይም አካል ጉዳት አለው?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="hasMedicalConditionAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="hasMedicalConditionAm" value="No" required /> አይ</label>
+          </div>
+
+          <label>የጠፋው ሰው የጠፋው ድንገት ወይስ ከግጭት በኋላ ነበር?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="disappearanceTypeAm" value="Sudden" required /> ድንገት</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="disappearanceTypeAm" value="AfterArgument" required /> ከጭቅጭቅ/ግጭት በኋላ</label>
+          </div>
+
+          <label>ሆስፒታሎች፣ ወዳጆች ወይም ዘመዶች ጋር አለመኖራቸውን አረጋግጠዋል?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="checkedPlacesAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="checkedPlacesAm" value="No" required /> አይ</label>
+          </div>
+
+          <label>ጥቃት ደርሶባቸው ሊሆን ይችላል ብለው ይጠረጥራሉ?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="suspectFoulPlayAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="suspectFoulPlayAm" value="No" required /> አይ</label>
+          </div>
+
+          <label for="missingPersonInfoAm">የጠፋውን ሰው ሙሉ ስም፣ ዕድሜ፣ ፆታ እና የሰውነት መግለጫ (ቁመት፣ የታዩበት ልብስ፣ ልዩ ምልክቶች ወዘተ)</label>
+          <textarea id="missingPersonInfoAm" name="missingPersonInfoAm" rows="4" required></textarea>
+
+          <label for="lastSeenAm">ለመጨረሻ ጊዜ የታዩት መቼ እና የት ነበር?</label>
+          <textarea id="lastSeenAm" name="lastSeenAm" rows="3" required></textarea>
+
+          <label for="disappearanceCircumstancesAm">የጠፋው ሰው የጠፋበትን ሁኔታ እና ሌሎች አስፈላጊ መረጃዎች ይግለጹ</label>
+          <textarea id="disappearanceCircumstancesAm" name="disappearanceCircumstancesAm" rows="4" required></textarea>
+
+          <label>የጠፋው ሰው ፎቶ አለዎት?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="hasPictureAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="hasPictureAm" value="No" required /> አይ</label>
+          </div>
+          <label for="missingPictureAm">የጠፋው ሰው ፎቶ አስገባ</label>
+          <input id="missingPictureAm" name="missingPictureAm" type="file" accept="image/*" />
+
+          <p id="missingErrorAm" class="error" style="display:none"></p>
+
+          <div class="actions">
+            <button id="submitMissingDetailsAm" type="submit" class="start-reporting">አቅርብ</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Family sections removed -->
+    <div id="familyDetailsSection" style="display:none">
+      <h1>Family & Marriage related crimes</h1>
+      <p style="margin-top:8px; margin-bottom:18px; font-weight:600">Answer the questions below about family or marriage related incidents.</p>
+      <div class="form-card">
+        <form id="familyForm" novalidate>
+          <div class="choice-card"><strong>Incident follow-up</strong></div>
+
+          <label>Is this related to domestic violence or physical abuse?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="domesticViolence" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="domesticViolence" value="No" required /> No</label>
+          </div>
+
+          <label>Is this related to forced marriage, underage marriage, or divorce issues?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="forcedMarriage" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="forcedMarriage" value="No" required /> No</label>
+          </div>
+
+          <label>Are there children involved or at risk?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="childrenInvolved" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="childrenInvolved" value="No" required /> No</label>
+          </div>
+
+          <label>Has this happened before?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="happenedBefore" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="happenedBefore" value="No" required /> No</label>
+          </div>
+
+          <label>Do you (or the victim) feel currently unsafe?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="feelUnsafe" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="feelUnsafe" value="No" required /> No</label>
+          </div>
+
+          <label>Do you need immediate protection or support?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="needProtection" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="needProtection" value="No" required /> No</label>
+          </div>
+
+          <label for="familyWhatHappened">What exactly happened? (please describe the incident)</label>
+          <textarea id="familyWhatHappened" name="familyWhatHappened" rows="4" required></textarea>
+
+          <label for="familyWhoInvolved">Who is involved and what is their relationship to the victim?</label>
+          <textarea id="familyWhoInvolved" name="familyWhoInvolved" rows="3" required></textarea>
+
+          <label for="familyAdditional">Any additional information you want the police to know</label>
+          <textarea id="familyAdditional" name="familyAdditional" rows="3"></textarea>
+
+          <label>Do you have any evidence?</label>
+          <input id="familyEvidence" name="familyEvidence" type="file" accept="image/*,audio/*,video/*" multiple />
+
+          <p id="familyError" class="error" style="display:none"></p>
+
+          <div class="actions">
+            <button id="submitFamilyDetails" type="submit" class="start-reporting">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div id="theftDetailsSection" style="display:none">
+      <h1 id="theftDetailsTitle">Theft</h1>
+      <p id="theftDetailsSubtitle" style="margin-top:8px; margin-bottom:18px; font-weight:600">
+        Answer the questions below about the theft.
+      </p>
+      <div class="form-card">
+        <form id="theftForm" novalidate>
+          <div class="choice-card">
+            <strong>Incident follow-up</strong>
+          </div>
+
+          <label>Did you see the person who stole it?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="sawSuspect" value="Yes" required /> Yes
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="sawSuspect" value="No" required /> No
+            </label>
+          </div>
+
+          <label>Are there any witnesses?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasWitnesses" value="Yes" required /> Yes
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasWitnesses" value="No" required /> No
+            </label>
+          </div>
+
+          <label>Do you suspect anyone?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="suspectAnyone" value="Yes" required /> Yes
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="suspectAnyone" value="No" required /> No
+            </label>
+          </div>
+
+          <label for="stolenItem">What exactly was stolen?</label>
+          <textarea id="stolenItem" name="stolenItem" rows="3" required></textarea>
+
+          <label for="theftDescription">Please describe how the theft happened</label>
+          <textarea id="theftDescription" name="theftDescription" rows="4" required></textarea>
+
+          <label for="theftLocation">Describe the location where the incident happened</label>
+          <textarea id="theftLocation" name="theftLocation" rows="3" required></textarea>
+
+          <label for="suspectDescription">Describe the suspect (if you saw them) (eg:- cloth, height, skin type, age range)</label>
+          <textarea id="suspectDescription" name="suspectDescription" rows="4" required></textarea>
+
+          <label for="ownerDescription">Whose item is stolen?</label>
+          <textarea id="ownerDescription" name="ownerDescription" rows="3" required></textarea>
+
+          <label for="propertyOwnership">Is the item individual or organization property? If it is organization property, state the organization.</label>
+          <textarea id="propertyOwnership" name="propertyOwnership" rows="3" required></textarea>
+
+          <label for="evidenceUpload">Do you have any evidence? Upload image, audio, or video evidence.</label>
+          <input id="evidenceUpload" name="evidenceUpload" type="file" accept="image/*,audio/*,video/*" multiple />
+
+          <p id="theftError" class="error" style="display:none"></p>
+
+          <div class="actions">
+            <button id="submitTheftDetails" type="submit" class="start-reporting">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="assaultDetailsSection" style="display:none">
+      <h1>Physical assault</h1>
+      <p style="margin-top:8px; margin-bottom:18px; font-weight:600">
+        Answer the questions about the assault incident.
+      </p>
+      <div class="form-card">
+        <form id="assaultForm" novalidate>
+          <div class="choice-card">
+            <strong>Incident follow-up</strong>
+          </div>
+
+          <label>Do you know the attacker?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="knowAttacker" value="Yes" required /> Yes
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="knowAttacker" value="No" required /> No
+            </label>
+          </div>
+
+          <label>Did you get injured?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="gotInjured" value="Yes" required /> Yes
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="gotInjured" value="No" required /> No
+            </label>
+          </div>
+
+          <label>Did you go to a hospital/clinic?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="visitedHospital" value="Yes" required /> Yes
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="visitedHospital" value="No" required /> No
+            </label>
+          </div>
+
+          <label>Are there any witnesses?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasWitnessesAssault" value="Yes" required /> Yes
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasWitnessesAssault" value="No" required /> No
+            </label>
+          </div>
+
+          <label>Do you still feel in danger?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="feelDanger" value="Yes" required /> Yes
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="feelDanger" value="No" required /> No
+            </label>
+          </div>
+
+          <label for="assaultDescription">Please describe what happened</label>
+          <textarea id="assaultDescription" name="assaultDescription" rows="4" required></textarea>
+
+          <label for="assaultWeapon">What did the attacker use? (hands, stick, etc.)</label>
+          <textarea id="assaultWeapon" name="assaultWeapon" rows="3" required></textarea>
+
+          <label for="attackerDescription">Describe the attacker</label>
+          <textarea id="attackerDescription" name="attackerDescription" rows="4" required></textarea>
+
+          <p id="assaultError" class="error" style="display:none"></p>
+
+          <div class="actions">
+            <button id="submitAssaultDetails" type="submit" class="start-reporting">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="theftDetailsSectionAm" style="display:none">
+      <h1 id="theftDetailsTitleAm">የስርቆት</h1>
+      <p id="theftDetailsSubtitleAm" style="margin-top:8px; margin-bottom:18px; font-weight:600">
+        ስርቆቱን በትክክል ለማስረዳት የሚከተሉትን ጥያቄዎች ይሙሉ።
+      </p>
+      <div class="form-card">
+        <form id="theftFormAm" novalidate>
+          <div class="choice-card">
+            <strong>የክስ ጥያቄዎች</strong>
+          </div>
+
+          <label>የሰረቀውን ሰው ታቀዋለህ?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="sawSuspectAm" value="Yes" required /> አዎ
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="sawSuspectAm" value="No" required /> አይ
+            </label>
+          </div>
+
+          <label>ምስክሮች አሉ?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasWitnessesAm" value="Yes" required /> አዎ
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasWitnessesAm" value="No" required /> አይ
+            </label>
+          </div>
+
+          <label>ሚጠረጥሩት ሰው አለ?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="suspectAnyoneAm" value="Yes" required /> አዎ
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="suspectAnyoneAm" value="No" required /> አይ
+            </label>
+          </div>
+
+          <label for="stolenItemAm"> የተሰረቀው ምንድን ነው?</label>
+          <textarea id="stolenItemAm" name="stolenItemAm" rows="3" required></textarea>
+
+          <label for="theftDescriptionAm">ስርቆቱ እንዴት ተከሰተ ይግለፁ</label>
+          <textarea id="theftDescriptionAm" name="theftDescriptionAm" rows="4" required></textarea>
+
+          <label for="theftLocationAm">የክስ ቦታውን ይግለጹ</label>
+          <textarea id="theftLocationAm" name="theftLocationAm" rows="3" required></textarea>
+
+          <label for="suspectDescriptionAm">ተጠርጣሪውን ይግለጹ (ልብስ፣ ከፍታ፣ ቆዳ ዓይነት፣ ዕድሜ ወዘተ)</label>
+          <textarea id="suspectDescriptionAm" name="suspectDescriptionAm" rows="4" required></textarea>
+
+          <label for="ownerDescriptionAm">የማን ንብረት ነው የተሰረቀው?</label>
+          <textarea id="ownerDescriptionAm" name="ownerDescriptionAm" rows="3" required></textarea>
+
+          <label for="propertyOwnershipAm">ንብረቱ የግለሰብ ነው ወይም የድርጅት? ከድርጅት የሆነ ከሆነ ድርጅቱን ይግለጹ።</label>
+          <textarea id="propertyOwnershipAm" name="propertyOwnershipAm" rows="3" required></textarea>
+
+          <label for="evidenceUploadAm">ማስረጃ አለዎት? የምስል፣ የድምጽ ወይም የቪዲዮ ማስገባት ይችላሉ።</label>
+          <input id="evidenceUploadAm" name="evidenceUploadAm" type="file" accept="image/*,audio/*,video/*" multiple />
+
+          <p id="theftErrorAm" class="error" style="display:none"></p>
+
+          <div class="actions">
+            <button id="submitTheftDetailsAm" type="submit" class="start-reporting">አቅርብ</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="assaultDetailsSectionAm" style="display:none">
+      <h1>የአካላዊ ጥቃት</h1>
+      <p style="margin-top:8px; margin-bottom:18px; font-weight:600">
+        እባክዎ ስለ ጥቃቱ የሚከተሉትን ጥያቄዎች ይመልሱ።
+      </p>
+      <div class="form-card">
+        <form id="assaultFormAm" novalidate>
+          <div class="choice-card">
+            <strong>የክስ ጥያቄዎች</strong>
+          </div>
+
+          <label>ተጥቃቹን ታውቃለህ?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="knowAttackerAm" value="Yes" required /> አዎ
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="knowAttackerAm" value="No" required /> አይ
+            </label>
+          </div>
+
+          <label>ተጎዳህ?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="gotInjuredAm" value="Yes" required /> አዎ
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="gotInjuredAm" value="No" required /> አይ
+            </label>
+          </div>
+
+          <label>ወደ ሕክምና ቤት/ክሊኒክ ሄደህ?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="visitedHospitalAm" value="Yes" required /> አዎ
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="visitedHospitalAm" value="No" required /> አይ
+            </label>
+          </div>
+
+          <label>ምስክሮች አሉ?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasWitnessesAssaultAm" value="Yes" required /> አዎ
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasWitnessesAssaultAm" value="No" required /> አይ
+            </label>
+          </div>
+
+          <label>እስኪአሁን ድረስ አለዎት እርስ አለቀ?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="feelDangerAm" value="Yes" required /> አዎ
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="feelDangerAm" value="No" required /> አይ
+            </label>
+          </div>
+
+          <label for="assaultDescriptionAm">እባክዎ የሆነውን እስከዚድ ያስረዱ</label>
+          <textarea id="assaultDescriptionAm" name="assaultDescriptionAm" rows="4" required></textarea>
+
+          <label for="assaultWeaponAm">ጥቃት ምን ነበር? (እጆች፣ ጭርቅ፣ ወዘተ)</label>
+          <textarea id="assaultWeaponAm" name="assaultWeaponAm" rows="3" required></textarea>
+
+          <label for="attackerDescriptionAm">ተጥቃቹን ይግለጹ</label>
+          <textarea id="attackerDescriptionAm" name="attackerDescriptionAm" rows="4" required></textarea>
+
+          <p id="assaultErrorAm" class="error" style="display:none"></p>
+
+          <div class="actions">
+            <button id="submitAssaultDetailsAm" type="submit" class="start-reporting">አቅርብ</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="sexualDetailsSection" style="display:none">
+      <h1>Sexual violence</h1>
+      <p style="margin-top:8px; margin-bottom:18px; font-weight:600">Answer the questions below about the sexual violence incident.</p>
+      <div class="form-card">
+        <form id="sexualForm" novalidate>
+          <div class="choice-card"><strong>Incident follow-up</strong></div>
+
+          <label>Did the incident involve physical contact?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="physicalContact" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="physicalContact" value="No" required /> No</label>
+          </div>
+
+          <label>Do you know the perpetrator?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="knowPerpetrator" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="knowPerpetrator" value="No" required /> No</label>
+          </div>
+
+          <label>Did it happen recently (within the last 72 hours)?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="recent72" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="recent72" value="No" required /> No</label>
+          </div>
+
+          <label>Have you already sought medical help?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="soughtMedical" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="soughtMedical" value="No" required /> No</label>
+          </div>
+
+          <label>Are there any witnesses?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="witnessesSexual" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="witnessesSexual" value="No" required /> No</label>
+          </div>
+
+          <label>Do you want the case to remain confidential?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="confidential" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="confidential" value="No" required /> No</label>
+          </div>
+
+          <label>Do you need immediate medical or psychological support?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="needSupport" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="needSupport" value="No" required /> No</label>
+          </div>
+
+          <label for="sexualDescribe">Please describe what happened (you can write as much or as little as you feel comfortable)</label>
+          <textarea id="sexualDescribe" name="sexualDescribe" rows="4" required></textarea>
+
+          <label for="sexualWhenWhere">When and where did it occur?</label>
+          <textarea id="sexualWhenWhere" name="sexualWhenWhere" rows="3" required></textarea>
+
+          <label for="sexualOtherInfo">Any other information that may help</label>
+          <textarea id="sexualOtherInfo" name="sexualOtherInfo" rows="3"></textarea>
+
+          <label>Do you have any evidence?</label>
+          <input id="sexualEvidence" name="sexualEvidence" type="file" accept="image/*,audio/*,video/*" multiple />
+
+          <p id="sexualError" class="error" style="display:none"></p>
+
+          <div class="actions">
+            <button id="submitSexualDetails" type="submit" class="start-reporting">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
+    <div id="otherDetailsSection" style="display:none">
+      <h1>Other incident</h1>
+      <p style="margin-top:8px; margin-bottom:18px; font-weight:600">
+        Answer the questions below about this incident.
+      </p>
+      <div class="form-card">
+        <form id="otherForm" novalidate>
+          <div class="choice-card">
+            <strong>Incident follow-up</strong>
+          </div>
+
+          <label>Was anyone injured?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="anyoneInjured" value="Yes" required /> Yes
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="anyoneInjured" value="No" required /> No
+            </label>
+          </div>
+
+          <label>Do you have any evidence?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasEvidence" value="Yes" required /> Yes
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasEvidence" value="No" required /> No
+            </label>
+          </div>
+
+          <label for="otherDescription">Please describe what happened in detail</label>
+          <textarea id="otherDescription" name="otherDescription" rows="4" required></textarea>
+
+          <label for="otherInvolved">Who was involved?</label>
+          <textarea id="otherInvolved" name="otherInvolved" rows="3" required></textarea>
+
+          <label for="otherAdditional">Upload any other important information (image, video, or audio file)</label>
+          <input id="otherAdditional" name="otherAdditional" type="file" accept="image/*,audio/*,video/*" multiple required />
+
+          <p id="otherError" class="error" style="display:none"></p>
+
+          <div class="actions">
+            <button id="submitOtherDetails" type="submit" class="start-reporting">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="otherDetailsSectionAm" style="display:none">
+      <h1>ሌላ</h1>
+      <p style="margin-top:8px; margin-bottom:18px; font-weight:600">
+        እባክዎ የሚከተሉትን ጥያቄዎች ይመልሱ።
+      </p>
+      <div class="form-card">
+        <form id="otherFormAm" novalidate>
+          <div class="choice-card">
+            <strong>የክስ ጥያቄዎች</strong>
+          </div>
+
+          <label>የተጎዳ ሰው አለ?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="anyoneInjuredAm" value="Yes" required /> አዎ
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="anyoneInjuredAm" value="No" required /> አይ
+            </label>
+          </div>
+
+          <label>ማስረጃ አለዎት?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasEvidenceAm" value="Yes" required /> አዎ
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasEvidenceAm" value="No" required /> አይ
+            </label>
+          </div>
+
+          <label for="otherDescriptionAm">እባክዎ የተፈጠረውን ነገር በዝርዝር ይግለጹ።</label>
+          <textarea id="otherDescriptionAm" name="otherDescriptionAm" rows="4" required></textarea>
+
+          <label for="otherInvolvedAm">በዚህ ክስተት ውስጥ ማን ማን ተሳትፎ ነበራቸው?</label>
+          <textarea id="otherInvolvedAm" name="otherInvolvedAm" rows="3" required></textarea>
+
+          <label for="otherAdditionalAm">ሌላ ማንኛውም ጠቃሚ መረጃ ካሎት ምስል፣ ቪዲዮ ወይም ኦዲዮ ፋይል ይጫኑ።</label>
+          <input id="otherAdditionalAm" name="otherAdditionalAm" type="file" accept="image/*,audio/*,video/*" multiple />
+
+          <p id="otherErrorAm" class="error" style="display:none"></p>
+
+          <div class="actions">
+            <button id="submitOtherDetailsAm" type="submit" class="start-reporting">አቅርብ</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="lostDetailsSection" style="display:none">
+      <h1>Lost property</h1>
+      <p style="margin-top:8px; margin-bottom:18px; font-weight:600">Answer the questions below about the lost property.</p>
+      <div class="form-card">
+        <form id="lostForm" novalidate>
+          <div class="choice-card"><strong>Incident follow-up</strong></div>
+
+          <label>Have you already searched the area thoroughly?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="searchedArea" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="searchedArea" value="No" required /> No</label>
+          </div>
+
+          <label>Does the item contain important documents or high value?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="highValue" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="highValue" value="No" required /> No</label>
+          </div>
+
+          <label>Does the item have a unique mark or identification?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="hasUniqueId" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="hasUniqueId" value="No" required /> No</label>
+          </div>
+
+          <label>Do you suspect it was stolen rather than simply lost?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="suspectStolen" value="Yes" required /> Yes</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="suspectStolen" value="No" required /> No</label>
+          </div>
+
+          <label for="lostItemDescription">What exactly did you lose? (detailed description)</label>
+          <textarea id="lostItemDescription" name="lostItemDescription" rows="4" required></textarea>
+
+          <label for="lostWhenWhere">When and where did you last see it?</label>
+          <textarea id="lostWhenWhere" name="lostWhenWhere" rows="3" required></textarea>
+
+          <label for="lostUniqueFeatures">Please provide any unique features, or other identifying details</label>
+          <textarea id="lostUniqueFeatures" name="lostUniqueFeatures" rows="3"></textarea>
+
+          <label>Do you have any evidence?</label>
+          <input id="lostEvidence" name="lostEvidence" type="file" accept="image/*,audio/*,video/*" multiple />
+
+          <p id="lostError" class="error" style="display:none"></p>
+
+          <div class="actions">
+            <button id="submitLostDetails" type="submit" class="start-reporting">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
+    <div id="sexualDetailsSectionAm" style="display:none">
+      <h1>የፆታዊ ጥቃት</h1>
+      <p style="margin-top:8px; margin-bottom:18px; font-weight:600">እባክዎ ስለ የፆታዊ ጥቃት የሚከተሉትን ጥያቄዎች ይመልሱ።</p>
+      <div class="form-card">
+        <form id="sexualFormAm" novalidate>
+          <div class="choice-card"><strong>የክስ ጥያቄዎች</strong></div>
+
+          <label>ድርጊቱ ከአካላዊ ንክኪ ጋር የተያያዘ ነው?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="physicalContactAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="physicalContactAm" value="No" required /> አይ</label>
+          </div>
+
+          <label>በደለኛውን (ጥፋተኛውን) ያውቁታል?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="knowPerpetratorAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="knowPerpetratorAm" value="No" required /> አይ</label>
+          </div>
+
+          <label>ድርጊቱ በቅርቡ (ባለፉት 72 ሰዓታት ውስጥ) ነው የተከሰተው?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="recent72Am" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="recent72Am" value="No" required /> አይ</label>
+          </div>
+
+          <label>ቀደም ብለው የሕክምና እርዳታ አግኝተዋል?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="soughtMedicalAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="soughtMedicalAm" value="No" required /> አይ</label>
+          </div>
+
+          <label>ምስክሮች አሉ?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="witnessesSexualAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="witnessesSexualAm" value="No" required /> አይ</label>
+          </div>
+
+          <label>ጉዳዩ በሚስጥር እንዲያዝልዎ ይፈልጋሉ?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="confidentialAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="confidentialAm" value="No" required /> አይ</label>
+          </div>
+
+          <label>አስቸኳይ የሕክምና ወይም የሥነ-ልቦና ድጋፍ ይፈልጋሉ?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="needSupportAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="needSupportAm" value="No" required /> አይ</label>
+          </div>
+
+          <label for="sexualDescribeAm">እባክዎ የተከሰተውን ነገር ያብራሩ (ምቾት በተሰማዎት መጠን በዝርዝር ወይም ባጭሩ መጻፍ ይችላሉ)</label>
+          <textarea id="sexualDescribeAm" name="sexualDescribeAm" rows="4" required></textarea>
+
+          <label for="sexualWhenWhereAm">መቼ እና የት ነበር?</label>
+          <textarea id="sexualWhenWhereAm" name="sexualWhenWhereAm" rows="3" required></textarea>
+
+          <label for="sexualOtherInfoAm">ሌሎች የሚረዱ መረጃዎች</label>
+          <textarea id="sexualOtherInfoAm" name="sexualOtherInfoAm" rows="3"></textarea>
+
+          <label>ማስረጃ አለዎት?</label>
+          <input id="sexualEvidenceAm" name="sexualEvidenceAm" type="file" accept="image/*,audio/*,video/*" multiple />
+
+          <p id="sexualErrorAm" class="error" style="display:none"></p>
+
+          <div class="actions">
+            <button id="submitSexualDetailsAm" type="submit" class="start-reporting">አቅርብ</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="illegalDetailsSection" style="display:none">
+      <h1>Illegal trade and drug trafficking</h1>
+      <p style="margin-top:8px; margin-bottom:18px; font-weight:600">
+        Answer the questions below about observed illegal trade or drug trafficking activity.
+      </p>
+      <div class="form-card">
+        <form id="illegalForm" novalidate>
+          <div class="choice-card">
+            <strong>Incident follow-up</strong>
+          </div>
+
+          <label>Did you personally witness the activity?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="witnessed" value="Yes" required /> Yes
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="witnessed" value="No" required /> No
+            </label>
+          </div>
+
+          <label>Is this still happening now?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="stillHappening" value="Yes" required /> Yes
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="stillHappening" value="No" required /> No
+            </label>
+          </div>
+
+          <label>Do you know the people involved?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="knowPeople" value="Yes" required /> Yes
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="knowPeople" value="No" required /> No
+            </label>
+          </div>
+
+          <label>Are there any witnesses?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasWitnessesIllegal" value="Yes" required /> Yes
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasWitnessesIllegal" value="No" required /> No
+            </label>
+          </div>
+
+          <label>Do you have any photos, videos, or other evidence?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasEvidenceIllegal" value="Yes" required /> Yes
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasEvidenceIllegal" value="No" required /> No
+            </label>
+          </div>
+
+          <label for="observedDescription">Please describe what you observed (what was being traded or moved, location, time, number of people, vehicles, etc.)</label>
+          <textarea id="observedDescription" name="observedDescription" rows="4" required></textarea>
+
+          <label for="additionalDetails">Any additional details that can help the police (names, phone numbers, vehicle plate numbers, habitual places, etc.)</label>
+          <textarea id="additionalDetails" name="additionalDetails" rows="4" required></textarea>
+
+          <label for="illegalEvidence">Do you have any evidence? Upload image, video, or audio evidence.</label>
+          <input id="illegalEvidence" name="illegalEvidence" type="file" accept="image/*,audio/*,video/*" multiple />
+
+          <p id="illegalError" class="error" style="display:none"></p>
+
+          <div class="actions">
+            <button id="submitIllegalDetails" type="submit" class="start-reporting">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="illegalDetailsSectionAm" style="display:none">
+      <h1>የሕጋዊ ያልሆነ ንግድ እና የመድሃኒት እጽ ሽያጭ</h1>
+      <p style="margin-top:8px; margin-bottom:18px; font-weight:600">
+        ስለተመለከቱት ሕገ-ወጥ የንግድ እንቅስቃሴ ወይም የዕፅ ዝውውር ከዚህ በታች ያሉትን ጥያቄዎች ይመልሱ።
+      </p>
+      <div class="form-card">
+        <form id="illegalFormAm" novalidate>
+          <div class="choice-card">
+            <strong>የክስ ጥያቄዎች</strong>
+          </div>
+
+          <label>ድርጊቱን በግል ተመልክተውታል?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="witnessedAm" value="Yes" required /> አዎ
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="witnessedAm" value="No" required /> አይ
+            </label>
+          </div>
+
+          <label>ይህ አሁንም እየተካሄደ ያለ ነገር ነው?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="stillHappeningAm" value="Yes" required /> አዎ
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="stillHappeningAm" value="No" required /> አይ
+            </label>
+          </div>
+
+          <label>በዚህ ውስጥ የተሳተፉትን ሰዎች ያውቋቸዋል?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="knowPeopleAm" value="Yes" required /> አዎ
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="knowPeopleAm" value="No" required /> አይ
+            </label>
+          </div>
+
+          <label>ምስክሮች አሉ?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasWitnessesIllegalAm" value="Yes" required /> አዎ
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasWitnessesIllegalAm" value="No" required /> አይ
+            </label>
+          </div>
+
+          <label>ፎቶዎች፣ ቪዲዮዎች ወይም ሌሎች ማስረጃዎች አሉዎት?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasEvidenceIllegalAm" value="Yes" required /> አዎ
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasEvidenceIllegalAm" value="No" required /> አይ
+            </label>
+          </div>
+
+          <label for="observedDescriptionAm">እባክዎ የተመለከቱትን ነገር ያብራሩ (ምን ዓይነት እቃ/ዕፅ ሲሸጥ ወይም ሲዘዋወር እንደነበር፣ ቦታውን፣ ሰዓቱን፣ የሰዎችን ብዛት፣ የተሽከርካሪዎችን መረጃ እና የመሳሰሉትን)</label>
+          <textarea id="observedDescriptionAm" name="observedDescriptionAm" rows="4" required></textarea>
+
+          <label for="additionalDetailsAm">ለፖሊስ ሊረዱ የሚችሉ ተጨማሪ መረጃዎች (ስሞች፣ የስልክ ቁጥሮች፣ የተሽከርካሪ የሰሌዳ ቁጥሮች፣ ዘወትር የሚገኙባቸው ቦታዎች እና የመሳሰሉት)</label>
+          <textarea id="additionalDetailsAm" name="additionalDetailsAm" rows="4" required></textarea>
+
+          <label for="illegalEvidenceAm">ማስረጃ አለዎት? ምስል፣ ድምጽ ወይም ቪዲዮ ማስገባት ይችላሉ።</label>
+          <input id="illegalEvidenceAm" name="illegalEvidenceAm" type="file" accept="image/*,audio/*,video/*" multiple />
+
+          <p id="illegalErrorAm" class="error" style="display:none"></p>
+
+          <div class="actions">
+            <button id="submitIllegalDetailsAm" type="submit" class="start-reporting">አቅርብ</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="lostDetailsSectionAm" style="display:none">
+      <h1>የጠፋ ንብረት</h1>
+      <p style="margin-top:8px; margin-bottom:18px; font-weight:600">እባክዎ ስለ ጠፋው ንብረት የሚከተሉትን ጥያቄዎች ይመልሱ።</p>
+      <div class="form-card">
+        <form id="lostFormAm" novalidate>
+          <div class="choice-card"><strong>የክስ ጥያቄዎች</strong></div>
+
+          <label>አካባቢውን በደንብ ፈትሻችሁታል?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="searchedAreaAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="searchedAreaAm" value="No" required /> አይ</label>
+          </div>
+
+          <label>ዕቃው ጠቃሚ ሰነዶችን ወይም ከፍተኛ ዋጋ ያለው ነገር ይዟል?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="highValueAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="highValueAm" value="No" required /> አይ</label>
+          </div>
+
+          <label>ዕቃው ልዩ ምልክት፣ ወይም መለያ አለው?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="hasUniqueIdAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="hasUniqueIdAm" value="No" required /> አይ</label>
+          </div>
+
+          <label>ተሰርቋል ብለው ይጠረጥራሉ?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="suspectStolenAm" value="Yes" required /> አዎ</label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);"><input type="radio" name="suspectStolenAm" value="No" required /> አይ</label>
+          </div>
+
+          <label for="lostItemDescriptionAm">በትክክል ምን እንደጠፋዎት ቢገልጹልን? (ዝርዝር መግለጫ)</label>
+          <textarea id="lostItemDescriptionAm" name="lostItemDescriptionAm" rows="4" required></textarea>
+
+          <label for="lostWhenWhereAm">መቼና የት ነበር ለመጨረሻ ጊዜ ያዩት?</label>
+          <textarea id="lostWhenWhereAm" name="lostWhenWhereAm" rows="3" required></textarea>
+
+          <label for="lostUniqueFeaturesAm">እባክዎ ማንነቱን ለመለየት የሚረዱ ልዩ ምልክት፣ ወይም ሌሎች መለያ ዝርዝሮችን ያቅርቡ።</label>
+          <textarea id="lostUniqueFeaturesAm" name="lostUniqueFeaturesAm" rows="3"></textarea>
+
+          <label>ማስረጃ አለዎት?</label>
+          <input id="lostEvidenceAm" name="lostEvidenceAm" type="file" accept="image/*,audio/*,video/*" multiple />
+
+          <p id="lostErrorAm" class="error" style="display:none"></p>
+
+          <div class="actions">
+            <button id="submitLostDetailsAm" type="submit" class="start-reporting">አቅርብ</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
+    <div id="fraudDetailsSection" style="display:none">
+      <h1>Fraud and scam</h1>
+      <p style="margin-top:8px; margin-bottom:18px; font-weight:600">
+        Answer the questions below about the fraud or scam.
+      </p>
+      <div class="form-card">
+        <form id="fraudForm" novalidate>
+          <div class="choice-card">
+            <strong>Incident follow-up</strong>
+          </div>
+
+          <label>Did you send money?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="sentMoney" value="Yes" required /> Yes
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="sentMoney" value="No" required /> No
+            </label>
+          </div>
+
+          <label>Do you have screenshots or receipts?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasReceipts" value="Yes" required /> Yes
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasReceipts" value="No" required /> No
+            </label>
+          </div>
+
+          <label>Do you know the scammer’s phone number or account?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasScammerContact" value="Yes" required /> Yes
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasScammerContact" value="No" required /> No
+            </label>
+          </div>
+
+          <label for="scamStory">How were you scammed? (explain the full story)</label>
+          <textarea id="scamStory" name="scamStory" rows="4" required></textarea>
+
+          <label for="offerDetails">What promise or offer did they give you?</label>
+          <textarea id="offerDetails" name="offerDetails" rows="3" required></textarea>
+
+          <label for="transactionDetails">Any transaction details or proof</label>
+          <input id="transactionDetails" name="transactionDetails" type="file" accept="image/*,audio/*,video/*" multiple required />
+
+          <p id="fraudError" class="error" style="display:none"></p>
+
+          <div class="actions">
+            <button id="submitFraudDetails" type="submit" class="start-reporting">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="fraudDetailsSectionAm" style="display:none">
+      <h1>የማታለል እና የማጭበርበር</h1>
+      <p style="margin-top:8px; margin-bottom:18px; font-weight:600">
+        የማታለል እና የማጭበርበር ጉዳዮችን ለማታወቅ የሚከተሉትን ጥያቄዎች ይመልሱ።
+      </p>
+      <div class="form-card">
+        <form id="fraudFormAm" novalidate>
+          <div class="choice-card">
+            <strong>የክስ ጥያቄዎች</strong>
+          </div>
+
+          <label>ገንዘብ ልከዋል?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="sentMoneyAm" value="Yes" required /> አዎ
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="sentMoneyAm" value="No" required /> አይ
+            </label>
+          </div>
+
+          <label>ስክሪንሾት ወይም የክፍያ ደረሰኝ አለዎት?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasReceiptsAm" value="Yes" required /> አዎ
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasReceiptsAm" value="No" required /> አይ
+            </label>
+          </div>
+
+          <label>የአጭበርባሪው ሰው የስልክ ቁጥር ወይም የአካውንት ዝርዝር አለዎት?</label>
+          <div class="choice-buttons">
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasScammerContactAm" value="Yes" required /> አዎ
+            </label>
+            <label class="choice-button" style="padding: 10px 16px; background:#f1f5f9; color:#102a43; border:1px solid rgba(16,42,67,0.16);">
+              <input type="radio" name="hasScammerContactAm" value="No" required /> አይ
+            </label>
+          </div>
+
+          <label for="scamStoryAm">እርስዎ እንዴት እንደተጭበረበሩ ይግለጹ</label>
+          <textarea id="scamStoryAm" name="scamStoryAm" rows="4" required></textarea>
+
+          <label for="offerDetailsAm">ምን ዓይነት ተስፋ ወይም ቃል ተሰጥቶታል(ከአጭበርባሪው)?</label>
+          <textarea id="offerDetailsAm" name="offerDetailsAm" rows="3" required></textarea>
+
+          <label for="transactionDetailsAm">የገንዘብ ዝውውር ዝርዝር ወይም ማረጋገጫ</label>
+          <input id="transactionDetailsAm" name="transactionDetailsAm" type="file" accept="image/*,audio/*,video/*" multiple />
+
+          <p id="fraudErrorAm" class="error" style="display:none"></p>
+
+          <div class="actions">
+            <button id="submitFraudDetailsAm" type="submit" class="start-reporting">አቅርብ</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const englishSection = document.getElementById('englishSection')
+      const amharicSection = document.getElementById('amharicSection')
+      const incidentSection = document.getElementById('incidentSection')
+      const theftDetailsSection = document.getElementById('theftDetailsSection')
+      const theftDetailsSectionAm = document.getElementById('theftDetailsSectionAm')
+      const assaultDetailsSection = document.getElementById('assaultDetailsSection')
+      const assaultDetailsSectionAm = document.getElementById('assaultDetailsSectionAm')
+      const sexualDetailsSection = document.getElementById('sexualDetailsSection')
+      const sexualDetailsSectionAm = document.getElementById('sexualDetailsSectionAm')
+      const fraudDetailsSection = document.getElementById('fraudDetailsSection')
+      const fraudDetailsSectionAm = document.getElementById('fraudDetailsSectionAm')
+      const illegalDetailsSection = document.getElementById('illegalDetailsSection')
+      const illegalDetailsSectionAm = document.getElementById('illegalDetailsSectionAm')
+      const missingDetailsSection = document.getElementById('missingDetailsSection')
+      const missingDetailsSectionAm = document.getElementById('missingDetailsSectionAm')
+      const familyDetailsSection = document.getElementById('familyDetailsSection')
+      const familyDetailsSectionAm = document.getElementById('familyDetailsSectionAm')
+      const otherDetailsSection = document.getElementById('otherDetailsSection')
+      const otherDetailsSectionAm = document.getElementById('otherDetailsSectionAm')
+      const lostDetailsSection = document.getElementById('lostDetailsSection')
+      const lostDetailsSectionAm = document.getElementById('lostDetailsSectionAm')
+      const confirmationSection = document.getElementById('confirmationSection')
+      const trackingSection = document.getElementById('trackingSection')
+      const trackingProgressBar = document.getElementById('trackingProgressBar')
+      const trackingProgressTrack = trackingProgressBar.parentElement
+      const incidentTitle = document.getElementById('incidentTitle')
+      const incidentSubtitle = document.getElementById('incidentSubtitle')
+      const incidentContentEn = document.getElementById('incidentContentEn')
+      const incidentContentAm = document.getElementById('incidentContentAm')
+      const incidentContinueButton = document.getElementById('incidentContinueButton')
+      const navBackBtn = document.getElementById('navBackBtn')
+      const navForwardBtn = document.getElementById('navForwardBtn')
+      const theftForm = document.getElementById('theftForm')
+      const theftError = document.getElementById('theftError')
+      const assaultForm = document.getElementById('assaultForm')
+      const assaultError = document.getElementById('assaultError')
+      const assaultFormAm = document.getElementById('assaultFormAm')
+      const assaultErrorAm = document.getElementById('assaultErrorAm')
+      const pageHistory = []
+      let historyIndex = -1
+      let lastReportId = window.localStorage.getItem('crime-report-last-id') || ''
+      let trackedReport = null
+      const urlParams = new URLSearchParams(window.location.search)
+      const storedLanguage = window.localStorage.getItem('crime-report-language') || 'en'
+      const urlLang = urlParams.get('lang')
+      const ref = document.referrer || ''
+      let language = 'en'
+
+      if (urlLang) {
+        const u = String(urlLang).toLowerCase()
+        if (u === 'am' || u === 'amharic' || u.includes('amhar') || u.includes('%e1%88%a0') || u.includes('\u12a0')) {
+          language = 'am'
+        } else if (/^en/i.test(u)) {
+          language = 'en'
+        } else {
+          // fallback: check for Amharic script or local keywords
+          try {
+            const decoded = decodeURIComponent(String(urlLang))
+            if (decoded.includes('አ') || decoded.includes('አማር')) language = 'am'
+          } catch (e) {}
+        }
+      } else if (storedLanguage === 'am') {
+        language = 'am'
+      } else if (ref.includes('lang=am')) {
+        language = 'am'
+      }
+
+      // persist normalized language selection
+      window.localStorage.setItem('crime-report-language', language)
+      const kebelesBySubcity = {
+        'Tabor': ['Hogane wacho', 'Dume', 'Hitata', 'Tilte', 'Fura'],
+        'Menahariya': ['Piyasa', 'Minilium', 'Guwe'],
+        'Hayek dar': ['Gudumale', 'Gebeya dar'],
+        'Hayk dar': ['Gudumale', 'Gebeya dar'],
+        'Mehal': ['Leku', 'Addis abeba'],
+        'Bahil adarash': ['Harer', 'Bal adarash'],
+        'Misrak': ['Teso', 'ukire'],
+        'Addis ketema': ['Daka', 'Filadelfiya'],
+        'Tulla (Hawela-tula)': ['Dato odahe', 'Chefe koti jebesa', 'Gemeto gale', 'Hawela wendo', 'Gara rikata', 'Chafasine', 'Alamura', 'Tulo', 'Finchawa', 'Haranfama', 'Tula geter', 'Tula 01'],
+        'ታቦር': ['ሆጋነ ዋጮ', 'ዱሜ', 'ህጣታ', 'ጥልቴ', 'ፉራ'],
+        'መናሃሪያ': ['ፒያሳ', 'ሚሊኒየም', 'ጉዌ'],
+        'መናሃርያ': ['ፒያሳ', 'ሚሊኒየም', 'ጉዌ'],
+        'ሃይቅ ዳር': ['ጉዱማሌ', 'ገበያ ዳር'],
+        'መሃል': ['ለኩ', 'አዲስ አበባ'],
+        'ባህል አዳራሽ': ['ሃረር', 'ባህል አዳራሽ'],
+        'ምስራቅ': ['ቴሶ', 'ኡቄሮ'],
+        'አዲስ ከተማ': ['ዳካ', 'ፊላደልፊያ'],
+        'ቱላ': ['ዳቶ ኦዳረ', 'ጨፌ ኮቲ ጀበሳ', 'ገመቶ ጋሌ', 'ሃዌላ ወንዶ', 'ጋራ ሪቃታ', 'ጫፋሲኔ', 'አለሙራ', 'ቱሎ', 'ፍንጫዋ', 'ሀራንፋማ', 'ቱላ ገጠር', 'ቱላ 01'],
+        'ቱላ (ሃዌላ-ቱላ)': ['ዳቶ ኦዳረ', 'ጨፌ ኮቲ ጀበሳ', 'ገመቶ ጋሌ', 'ሃዌላ ወንዶ', 'ጋራ ሪቃታ', 'ጫፋሲኔ', 'አለሙራ', 'ቱሎ', 'ፍንጫዋ', 'ሀራንፋማ', 'ቱላ ገጠር', 'ቱላ 01']
+      }
+
+      const updateKebeleOptions = (subcityId, kebeleId, placeholder) => {
+        const subcitySelect = document.getElementById(subcityId)
+        const kebeleSelect = document.getElementById(kebeleId)
+        if (!subcitySelect || !kebeleSelect) return
+
+        const renderKebeles = () => {
+          const options = kebelesBySubcity[subcitySelect.value] || []
+          kebeleSelect.innerHTML = `<option value="">${placeholder}</option>`
+          options.forEach((kebele) => {
+            const option = document.createElement('option')
+            option.value = kebele
+            option.textContent = kebele
+            kebeleSelect.appendChild(option)
+          })
+        }
+
+        subcitySelect.addEventListener('change', renderKebeles)
+        renderKebeles()
+      }
+
+      updateKebeleOptions('subcityEn', 'kebeleEn', 'Select Kebele')
+      updateKebeleOptions('subcityAm', 'kebeleAm', 'ቀበሌ ይምረጡ')
+      const mode = urlParams.get('mode') === 'anonymous' ? 'anonymous' : 'contact'
+      const MIN_TEXTAREA_LENGTH = 30
+      const MAX_TEXTAREA_LENGTH = 500
+      const MAX_FILE_SIZE_BYTES = 1 * 1024 * 1024
+
+      const incidentTextareas = document.querySelectorAll('#incidentSection ~ div textarea')
+      incidentTextareas.forEach((textarea) => {
+        textarea.minLength = MIN_TEXTAREA_LENGTH
+        textarea.maxLength = MAX_TEXTAREA_LENGTH
+
+        const limitText = document.createElement('small')
+        limitText.className = 'textarea-limit'
+        limitText.textContent = textarea.id.endsWith('Am')
+          ? '30-500 ፊደላት ያስገቡ።'
+          : '30-500 characters'
+        textarea.insertAdjacentElement('afterend', limitText)
+      })
+
+      document.querySelectorAll('#incidentSection ~ div form').forEach((form) => {
+        form.addEventListener('submit', (event) => {
+          const shortTextarea = Array.from(form.querySelectorAll('textarea'))
+            .find((textarea) => textarea.value.trim() && textarea.value.trim().length < MIN_TEXTAREA_LENGTH)
+
+          if (!shortTextarea) return
+
+          event.preventDefault()
+          const error = form.querySelector('.error')
+          if (error) {
+            error.textContent = 'Please enter at least 30 characters in each completed text area.'
+            error.style.display = 'block'
+          }
+          shortTextarea.focus()
+        }, true)
+      })
+
+      document.querySelectorAll('#incidentSection ~ div form input[type="file"]').forEach((fileInput) => {
+        fileInput.addEventListener('change', () => {
+          const files = Array.from(fileInput.files || [])
+          const oversizedFiles = files.filter((file) => file.size > MAX_FILE_SIZE_BYTES)
+          const errorElement = fileInput.form?.querySelector('.error')
+
+          if (oversizedFiles.length > 0) {
+            fileInput.value = ''
+            if (errorElement) {
+              errorElement.textContent = 'Each incident file must be 1 MB or smaller.'
+              errorElement.style.display = 'block'
+            }
+          } else if (errorElement && errorElement.textContent === 'Each incident file must be 1 MB or smaller.') {
+            errorElement.textContent = ''
+            errorElement.style.display = 'none'
+          }
+        })
+      })
+
+      function setMode(section, modeValue) {
+        const anonymousSection = section === 'en' ? document.getElementById('anonymousSectionEn') : document.getElementById('anonymousSectionAm')
+        const contactSection = section === 'en' ? document.getElementById('contactSectionEn') : document.getElementById('contactSectionAm')
+        const anonymousBtn = section === 'en' ? document.getElementById('anonymousBtn') : document.getElementById('anonymousBtnAm')
+        const contactBtn = section === 'en' ? document.getElementById('contactBtn') : document.getElementById('contactBtnAm')
+
+        // guard against missing elements to avoid stopping script execution
+        if (modeValue === 'anonymous') {
+          if (anonymousSection) anonymousSection.style.display = 'block'
+          if (contactSection) contactSection.style.display = 'none'
+          if (anonymousBtn && anonymousBtn.classList) anonymousBtn.classList.add('active')
+          if (contactBtn && contactBtn.classList) contactBtn.classList.remove('active')
+        } else {
+          if (anonymousSection) anonymousSection.style.display = 'none'
+          if (contactSection) contactSection.style.display = 'block'
+          if (anonymousBtn && anonymousBtn.classList) anonymousBtn.classList.remove('active')
+          if (contactBtn && contactBtn.classList) contactBtn.classList.add('active')
+        }
+      }
+
+      function showIncidentSection() {
+        englishSection.style.display = 'none'
+        amharicSection.style.display = 'none'
+        incidentSection.style.display = 'block'
+        confirmationSection.style.display = 'none'
+        trackingSection.style.display = 'none'
+        theftDetailsSection.style.display = 'none'
+        theftDetailsSectionAm.style.display = 'none'
+        assaultDetailsSection.style.display = 'none'
+        assaultDetailsSectionAm.style.display = 'none'
+        sexualDetailsSection.style.display = 'none'
+        sexualDetailsSectionAm.style.display = 'none'
+        fraudDetailsSection.style.display = 'none'
+        fraudDetailsSectionAm.style.display = 'none'
+        familyDetailsSection.style.display = 'none'
+        familyDetailsSectionAm.style.display = 'none'
+        lostDetailsSection.style.display = 'none'
+        lostDetailsSectionAm.style.display = 'none'
+        otherDetailsSection.style.display = 'none'
+        otherDetailsSectionAm.style.display = 'none'
+        illegalDetailsSection.style.display = 'none'
+        illegalDetailsSectionAm.style.display = 'none'
+        missingDetailsSection.style.display = 'none'
+        missingDetailsSectionAm.style.display = 'none'
+        trackPage('incident')
+      }
+
+      function updateConfirmationContent(reportId) {
+        if (language === 'am') {
+          confirmationSection.innerHTML = `
+            <h1 style="margin-bottom:16px;">ሪፖርቱን ስላቀረቡ እናመሰግናለን።</h1>
+            <p style="margin:0; font-size:1.1rem; line-height:1.7; color:var(--crime-text);">
+              ሪፖርትዎ በሀዋሳ ከተማ ፖሊስ ተቀባይነት አግኝቷል።
+            </p>
+            <p id="reportId" class="report-id">የሪፖርት መለያ ቁጥር: ${reportId}</p>
+            <p id="reportStatus" class="report-status" aria-live="polite"></p>
+            <div class="confirmation-actions">
+              <button id="trackReportButton" type="button" class="start-reporting">ሪፖርቱን ይከታተሉ</button>
+              <button id="addAnotherReportButton" type="button" class="choice-button">ሌላ ሪፖርት ያቅርቡ</button>
+            </div>
+          `
+          return
+        }
+
+        confirmationSection.innerHTML = `
+          <h1 style="margin-bottom:16px;">Thank you for reporting.</h1>
+          <p style="margin:0; font-size:1.1rem; line-height:1.7; color:var(--crime-text);">
+            Your report has been received by the Hawassa City Administration Police.
+          </p>
+          <p id="reportId" class="report-id">Report ID: ${reportId}</p>
+          <p id="reportStatus" class="report-status" aria-live="polite"></p>
+          <div class="confirmation-actions">
+            <button id="trackReportButton" type="button" class="start-reporting">Track report</button>
+            <button id="addAnotherReportButton" type="button" class="choice-button">Add another report</button>
+          </div>
+        `
+      }
+
+      function formatReportId(reportId) {
+        const value = String(reportId || '')
+        return /^\d{5}$/.test(value) ? value : (/^\d+$/.test(value) ? `CR-${value}` : value)
+      }
+
+      function getTrackingLookup(reportId) {
+        const value = String(reportId || '').trim()
+        if (/^\d{5}$/.test(value)) return { trackingNumber: value, reportId: value }
+        const match = value.match(/^CR-(\d+)$/i)
+        if (match) return { reportId: match[1] }
+        return /^\d+$/.test(value) ? { reportId: value } : null
+      }
+
+      function updateTrackingPage(report) {
+        trackedReport = report
+        const isAmharic = language === 'am'
+        const supportingDetails = report.supporting_details || {}
+        const rawPayload = report.raw_payload || {}
+        const incidentSubcity = supportingDetails.incident_subcity || rawPayload.incident_subcity || report.subcity
+        const incidentKebele = supportingDetails.incident_kebele || rawPayload.incident_kebele || report.kebele
+        const status = String(report.status || 'new').toLowerCase()
+        const progressByStatus = {
+          new: { value: 25, en: 'Submitted', am: 'ቀርቧል' },
+          submitted: { value: 25, en: 'Submitted', am: 'ቀርቧል' },
+          'in progress': { value: 60, en: 'Under review', am: 'በግምገማ ላይ' },
+          'under investigation': { value: 60, en: 'Under investigation', am: 'በምርመራ ላይ' },
+          under_investigation: { value: 60, en: 'Under investigation', am: 'በምርመራ ላይ' },
+          reviewing: { value: 60, en: 'Under review', am: 'በግምገማ ላይ' },
+          resolved: { value: 100, en: 'Resolved', am: 'ተጠናቋል' },
+          closed: { value: 100, en: 'Closed', am: 'ተዘግቷል' },
+          rejected: { value: 100, en: 'Rejected', am: 'ውድቅ ተደርጓል' }
+        }
+        const progress = progressByStatus[status] || { value: 40, en: report.status || 'Processing', am: report.status || 'በሂደት ላይ' }
+        const createdAt = report.created_at ? new Date(report.created_at) : null
+        const dateText = createdAt && !Number.isNaN(createdAt.getTime())
+          ? createdAt.toLocaleString(isAmharic ? 'am-ET-u-ca-ethiopic' : 'en-US-u-ca-gregory', { dateStyle: 'medium', timeStyle: 'short' })
+          : '-'
+
+        document.getElementById('trackingTitle').textContent = isAmharic ? 'ሪፖርትዎን ይከታተሉ' : 'Track report'
+        document.getElementById('trackingInputLabel').textContent = isAmharic ? 'የሪፖርት መለያ ወይም የክትትል ቁጥር ያስገቡ' : 'Enter Report ID or tracking number'
+        document.getElementById('trackingInput').placeholder = '12345'
+        document.getElementById('trackingLookupButton').textContent = isAmharic ? 'ቀጥል' : 'Search'
+        document.getElementById('trackingIdLabel').textContent = isAmharic ? 'የሪፖርት መለያ ቁጥር' : 'Report ID'
+        document.getElementById('trackingStatusLabel').textContent = isAmharic ? 'ሁኔታ' : 'Status'
+        document.getElementById('trackingDateLabel').textContent = isAmharic ? 'የቀረበበት ቀን እና ሰዓት' : 'Submission date and time'
+        document.getElementById('trackingIncidentLabel').textContent = isAmharic ? 'የክስተቱ አይነት' : 'Incident type'
+        document.getElementById('trackingSubcityLabel').textContent = isAmharic ? 'ክፍለ ከተማ' : 'Sub-city'
+        document.getElementById('trackingKebeleLabel').textContent = isAmharic ? 'ቀበሌ' : 'Kebele'
+        document.getElementById('trackingProgressTitle').textContent = isAmharic ? 'የሪፖርት ሂደት' : 'Report progress'
+        document.getElementById('trackingBackButton').textContent = isAmharic ? 'ወደ ማረጋገጫ ተመለስ' : 'Back to confirmation'
+        document.getElementById('trackingMessage').textContent = isAmharic ? 'የሪፖርትዎ ዝርዝር መረጃ እነሆ።' : 'Here are the details of your report.'
+        document.getElementById('trackingIdValue').textContent = report.tracking_number || report.trackingNumber || formatReportId(report.id || lastReportId)
+        document.getElementById('trackingStatusValue').textContent = isAmharic ? progress.am : progress.en
+        document.getElementById('trackingDateValue').textContent = dateText
+        document.getElementById('trackingIncidentValue').textContent = report.incident_type || report.report_type || '-'
+        document.getElementById('trackingSubcityValue').textContent = incidentSubcity || '-'
+        document.getElementById('trackingKebeleValue').textContent = incidentKebele || '-'
+        trackingProgressBar.style.width = `${progress.value}%`
+        trackingProgressTrack.setAttribute('aria-valuenow', String(progress.value))
+        document.getElementById('trackingProgressLabel').textContent = `${progress.value}% - ${isAmharic ? progress.am : progress.en}`
+        updateAdditionalInformationSection(report)
+      }
+
+      function updateAdditionalInformationSection(report) {
+        const isAmharic = language === 'am'
+        const card = document.getElementById('additionalInformationCard')
+        const requestElement = document.getElementById('additionalInformationRequest')
+        const form = document.getElementById('additionalInformationForm')
+        const requests = report.additionalInformationRequests || []
+        const pendingRequest = [...requests].reverse().find((item) => item.status !== 'responded')
+        const latestRequest = pendingRequest || requests[requests.length - 1]
+        if (!latestRequest) {
+          card.style.display = 'none'
+          return
+        }
+        card.style.display = 'block'
+        document.getElementById('additionalInformationTitle').textContent = isAmharic
+          ? 'ተጨማሪ መረጃ ተጠይቋል'
+          : 'Additional Information Requested'
+        requestElement.textContent = latestRequest.requestMessage || '-'
+        document.getElementById('additionalInformationResponseLabel').textContent = isAmharic ? 'ተጨማሪ መረጃ' : 'Additional Information'
+        document.getElementById('additionalInformationEvidenceLabel').textContent = isAmharic ? 'የድጋፍ ማስረጃ (አማራጭ)' : 'Supporting Evidence (Optional)'
+        document.getElementById('additionalInformationSubmit').textContent = isAmharic ? 'ተጨማሪ መረጃ አስገባ' : 'Submit Additional Information'
+        const responseInput = document.getElementById('additionalInformationResponse')
+        const statusElement = document.getElementById('additionalInformationStatus')
+        if (latestRequest.status === 'responded') {
+          responseInput.value = latestRequest.citizenResponse || ''
+          responseInput.disabled = true
+          document.getElementById('additionalInformationEvidence').disabled = true
+          document.getElementById('additionalInformationSubmit').disabled = true
+          statusElement.className = 'additional-information-status success'
+          statusElement.textContent = isAmharic ? 'ተጨማሪ መረጃ ተቀብሏል።' : 'Additional Information Received.'
+        } else {
+          responseInput.disabled = false
+          document.getElementById('additionalInformationEvidence').disabled = false
+          document.getElementById('additionalInformationSubmit').disabled = false
+          statusElement.className = 'additional-information-status'
+          statusElement.textContent = ''
+        }
+        form.dataset.requestId = String(latestRequest.id)
+      }
+
+      function setConfirmationActionHandlers() {
+        document.getElementById('trackReportButton')?.addEventListener('click', () => {
+          document.getElementById('trackingInput').value = formatReportId(lastReportId)
+          confirmationSection.style.display = 'none'
+          trackingSection.style.display = 'block'
+          trackPage('tracking')
+          document.getElementById('trackingInput').focus()
+        })
+
+        const trackingForm = document.getElementById('trackingLookupForm')
+        if (!trackingForm.dataset.bound) {
+          trackingForm.dataset.bound = 'true'
+          trackingForm.addEventListener('submit', async (event) => {
+            event.preventDefault()
+            const lookupError = document.getElementById('trackingLookupError')
+            const lookup = getTrackingLookup(document.getElementById('trackingInput').value)
+            if (!lookup) {
+              lookupError.textContent = language === 'am' ? 'እባክዎ 5 አሃዝ ያለው የክትትል ቁጥር ያስገቡ።' : 'Enter the five-digit tracking number.'
+              lookupError.style.display = 'block'
+              return
+            }
+
+            lookupError.style.display = 'none'
+            document.getElementById('trackingMessage').textContent = language === 'am' ? 'ሪፖርቱን በመፈለግ ላይ...' : 'Searching for the report...'
+            try {
+              let response = lookup.trackingNumber
+                ? await fetch(`/api/reports/?tracking_number=${encodeURIComponent(lookup.trackingNumber)}`)
+                : await fetch(`/api/reports/${lookup.reportId}/`)
+              if (!response.ok) throw new Error(`Backend error: ${response.status}`)
+              let result = await response.json()
+              let report = Array.isArray(result) ? result[0] : result
+              if (!report && lookup.reportId && lookup.trackingNumber) {
+                response = await fetch(`/api/reports/${encodeURIComponent(lookup.reportId)}/`)
+                if (!response.ok) throw new Error(`Backend error: ${response.status}`)
+                result = await response.json()
+                report = Array.isArray(result) ? result[0] : result
+              }
+              if (!report) throw new Error('Report not found')
+              // The tracking response already includes requests; render them immediately.
+              updateTrackingPage(report)
+              const trackingNumber = report.tracking_number || report.trackingNumber || lookup.trackingNumber || ''
+              const additionalInformationResponse = await fetch(`/api/reports/${encodeURIComponent(report.id)}/additional-information/?tracking_number=${encodeURIComponent(trackingNumber)}`)
+              if (additionalInformationResponse.ok) {
+                const additionalInformationResult = await additionalInformationResponse.json()
+                report.additionalInformationRequests = Array.isArray(additionalInformationResult.requests)
+                  ? additionalInformationResult.requests
+                  : []
+              }
+              lastReportId = report.tracking_number || report.trackingNumber || lookup.reportId || lookup.trackingNumber
+              updateTrackingPage(report)
+            } catch (error) {
+              console.error('Report tracking failed:', error)
+              lookupError.textContent = language === 'am' ? 'ይህ የሪፖርት መለያ አልተገኘም።' : 'No report was found with that ID.'
+              lookupError.style.display = 'block'
+            }
+          })
+        }
+
+        const additionalInformationForm = document.getElementById('additionalInformationForm')
+        if (!additionalInformationForm.dataset.bound) {
+          additionalInformationForm.dataset.bound = 'true'
+          additionalInformationForm.addEventListener('submit', async (event) => {
+            event.preventDefault()
+            const responseInput = document.getElementById('additionalInformationResponse')
+            const evidenceInput = document.getElementById('additionalInformationEvidence')
+            const statusElement = document.getElementById('additionalInformationStatus')
+            const responseText = responseInput.value.trim()
+            if (!responseText) {
+              statusElement.className = 'additional-information-status error'
+              statusElement.textContent = language === 'am' ? 'እባክዎ ምላሽ ያስገቡ።' : 'Enter your response.'
+              responseInput.focus()
+              return
+            }
+            const files = Array.from(evidenceInput.files || [])
+            if (files.some((file) => file.size > 5 * 1024 * 1024)) {
+              statusElement.className = 'additional-information-status error'
+              statusElement.textContent = language === 'am' ? 'እያንዳንዱ ፋይል ከ5 MB መብለጥ የለበትም።' : 'Each evidence file must be 5 MB or smaller.'
+              return
+            }
+            const formData = new FormData()
+            formData.append('request_id', additionalInformationForm.dataset.requestId || '')
+            formData.append('response', responseText)
+            formData.append('tracking_number', trackedReport?.tracking_number || trackedReport?.trackingNumber || lastReportId || '')
+            files.forEach((file) => formData.append('evidence', file))
+            statusElement.className = 'additional-information-status'
+            statusElement.textContent = language === 'am' ? 'በመላክ ላይ...' : 'Sending...'
+            try {
+              const reportId = trackedReport?.id || lastReportId
+              const apiResponse = await fetch(`/api/reports/${encodeURIComponent(reportId)}/additional-information/`, { method: 'POST', body: formData })
+              if (!apiResponse.ok) {
+                let errorMessage = ''
+                try {
+                  const errorResult = await apiResponse.json()
+                  errorMessage = errorResult.error || ''
+                } catch (parseError) {
+                  errorMessage = ''
+                }
+                throw new Error(errorMessage || `Backend error: ${apiResponse.status}`)
+              }
+              const result = await apiResponse.json()
+              const updatedRequest = result.request
+              const existingRequests = trackedReport.additionalInformationRequests || []
+              trackedReport = {
+                ...trackedReport,
+                additionalInformationRequests: existingRequests.map((request) => (
+                  request.id === updatedRequest.id ? updatedRequest : request
+                )),
+              }
+              updateAdditionalInformationSection(trackedReport)
+              statusElement.className = 'additional-information-status success'
+              statusElement.textContent = language === 'am'
+                ? 'ተጨማሪ መረጃዎ በተሳካ ሁኔታ ተልኳል።'
+                : 'Additional information submitted successfully.'
+            } catch (error) {
+              console.error('Additional information response failed:', error)
+              statusElement.className = 'additional-information-status error'
+              statusElement.textContent = error.message.includes('already been answered')
+                ? (language === 'am' ? 'ይህ ጥያቄ ቀድሞ ተመልሷል።' : 'This request has already been answered.')
+                : (language === 'am' ? 'መረጃው አልተላከም።' : 'Unable to send the response.')
+            }
+          })
+        }
+
+        document.getElementById('trackingBackButton')?.addEventListener('click', () => {
+          trackingSection.style.display = 'none'
+          confirmationSection.style.display = 'block'
+          trackPage('confirmation')
+        })
+
+        document.getElementById('addAnotherReportButton')?.addEventListener('click', () => {
+          document.querySelectorAll('form').forEach((form) => form.reset())
+          document.querySelectorAll('input[name="incidentType"]').forEach((input) => { input.checked = false })
+          showIncidentSection()
+        })
+      }
+
+      const incidentFormIds = [
+        'familyFormAm', 'missingForm', 'missingFormAm', 'familyForm',
+        'theftForm', 'assaultForm', 'theftFormAm', 'assaultFormAm',
+        'sexualForm', 'otherForm', 'otherFormAm', 'lostForm',
+        'sexualFormAm', 'illegalForm', 'illegalFormAm', 'lostFormAm',
+        'fraudForm', 'fraudFormAm'
+      ]
+
+      incidentFormIds.forEach((formId) => {
+        const form = document.getElementById(formId)
+        if (!form) return
+
+        const isAmharic = formId.endsWith('Am')
+        const fieldGroup = document.createElement('div')
+        fieldGroup.className = 'incident-timing-fields'
+        const today = new Date().toISOString().split('T')[0]
+        const sourceSubcitySelect = document.getElementById(isAmharic ? 'subcityAm' : 'subcityEn')
+        const subcityOptions = Array.from(sourceSubcitySelect?.options || [])
+          .filter((option) => option.value)
+          .map((option) => `<option value="${option.value}">${option.textContent}</option>`)
+          .join('')
+        fieldGroup.innerHTML = `
+          <div class="incident-row">
+            <div class="incident-field">
+              <label for="${formId}IncidentDate">${isAmharic ? 'የድርጊቱ ቀን' : 'Incident date'}</label>
+              <input id="${formId}IncidentDate" name="incident_date" type="date" max="${today}" />
+              <small class="date-error" role="alert">${isAmharic ? 'የወደፊት ቀን መምረጥ አይችሉም።' : 'Please choose today or an earlier date.'}</small>
+            </div>
+            <div class="incident-field">
+              <label for="${formId}IncidentTime">${isAmharic ? 'የድርጊቱ ግምታዊ ሰዓት' : 'Approximate time of the incident'}</label>
+              <input id="${formId}IncidentTime" name="incident_time" type="time" />
+            </div>
+          </div>
+          <div class="incident-row">
+            <div class="incident-field">
+              <label for="${formId}IncidentSubcity">${isAmharic ? 'የክስተቱ የተፈጠረበትን አድራሻ (ክፍለ ከተማ) ይምረጡ።' : 'Select the sub-city where the incident happen.'}</label>
+              <select id="${formId}IncidentSubcity" name="incident_subcity" required>
+                <option value="">${isAmharic ? 'ክፍለ ከተማ ይምረጡ' : 'Select sub-city'}</option>
+                ${subcityOptions}
+              </select>
+            </div>
+            <div class="incident-field">
+              <label for="${formId}IncidentKebele">${isAmharic ? 'ክስተቱ የተፈጠረበትን ቀበሌ ይምረጡ።' : 'Select the kebele where the incident happen.'}</label>
+              <select id="${formId}IncidentKebele" name="incident_kebele" required>
+                <option value="">${isAmharic ? 'ቀበሌ ይምረጡ' : 'Select kebele'}</option>
+              </select>
+            </div>
+          </div>
+        `
+        form.insertBefore(fieldGroup, form.firstElementChild?.nextElementSibling || form.firstChild)
+
+        const dateInput = fieldGroup.querySelector('input[type="date"]')
+        const dateError = fieldGroup.querySelector('.date-error')
+        const incidentSubcitySelect = fieldGroup.querySelector(`#${formId}IncidentSubcity`)
+        const incidentKebeleSelect = fieldGroup.querySelector(`#${formId}IncidentKebele`)
+        const renderIncidentKebeles = () => {
+          const placeholder = isAmharic ? 'ቀበሌ ይምረጡ' : 'Select kebele'
+          incidentKebeleSelect.innerHTML = `<option value="">${placeholder}</option>`
+          ;(kebelesBySubcity[incidentSubcitySelect.value] || []).forEach((kebele) => {
+            const option = document.createElement('option')
+            option.value = kebele
+            option.textContent = kebele
+            incidentKebeleSelect.appendChild(option)
+          })
+        }
+
+        incidentSubcitySelect.addEventListener('change', renderIncidentKebeles)
+        renderIncidentKebeles()
+        const validateDate = () => {
+          const isFutureDate = dateInput.value && dateInput.value > today
+          dateInput.setCustomValidity(isFutureDate ? dateError.textContent : '')
+          dateError.style.display = isFutureDate ? 'block' : 'none'
+          return !isFutureDate
+        }
+
+        dateInput.addEventListener('change', validateDate)
+
+        const confirmation = document.createElement('label')
+        confirmation.className = 'confirmation-check'
+        confirmation.innerHTML = `
+          <input type="checkbox" name="information_confirmation" required />
+          <span>${isAmharic
+            ? 'የሰጠሁት መረጃ በሙሉ እስከማውቀው ድረስ ትክክለኛ መሆኑን አረጋግጣለሁ።'
+            : 'I confirm that the information provided is accurate to the best of my knowledge.'}</span>
+        `
+        const confirmationError = document.createElement('small')
+        confirmationError.className = 'confirmation-error'
+        confirmationError.textContent = isAmharic
+          ? 'እባክዎ ከማስገባትዎ በፊት ይህን ማረጋገጫ ይምረጡ።'
+          : 'Please check the confirmation before submitting.'
+        const errorElement = form.querySelector('.error')
+        if (errorElement) {
+          errorElement.parentNode.insertBefore(confirmation, errorElement)
+          errorElement.parentNode.insertBefore(confirmationError, errorElement)
+        } else {
+          form.appendChild(confirmation)
+          form.appendChild(confirmationError)
+        }
+
+        const confirmationInput = confirmation.querySelector('input')
+        form.addEventListener('submit', (event) => {
+          const dateIsValid = validateDate()
+          const locationIsValid = incidentSubcitySelect.value && incidentKebeleSelect.value
+          if (dateIsValid && locationIsValid && confirmationInput.checked) return
+
+          event.preventDefault()
+          if (!dateIsValid) {
+            dateInput.focus()
+            return
+          }
+
+          if (!locationIsValid) {
+            const error = form.querySelector('.error')
+            if (error) {
+              error.textContent = isAmharic
+                ? 'እባክዎ የክስተቱን ክፍለ ከተማ እና ቀበሌ ይምረጡ።'
+                : 'Please select the incident sub-city and kebele before submitting.'
+              error.style.display = 'block'
+            }
+            incidentSubcitySelect.focus()
+            return
+          }
+
+          confirmationError.style.display = 'block'
+          confirmationInput.setCustomValidity(isAmharic
+            ? 'እባክዎ ሪፖርቱን ከማስገባትዎ በፊት መረጃው ትክክለኛ መሆኑን ያረጋግጡ።'
+            : 'Please confirm that the information is accurate before submitting.')
+          confirmationInput.reportValidity()
+          confirmationInput.focus()
+        }, true)
+        confirmationInput.addEventListener('change', () => {
+          confirmationInput.setCustomValidity('')
+          confirmationError.style.display = confirmationInput.checked ? 'none' : 'block'
+        })
+
+        const requiredFieldsError = document.createElement('small')
+        requiredFieldsError.className = 'confirmation-error'
+        requiredFieldsError.textContent = isAmharic
+          ? 'እባክዎ ሁሉንም አስፈላጊ ጥያቄዎች ይሙሉ፣ ይምረጡ እና ያረጋግጡ።'
+          : 'Please fill in, select, and check all required questions before submitting.'
+        if (errorElement) {
+          errorElement.parentNode.insertBefore(requiredFieldsError, errorElement)
+        } else {
+          form.appendChild(requiredFieldsError)
+        }
+
+        form.addEventListener('submit', (event) => {
+          if (!validateDate() || !incidentSubcitySelect.value || !incidentKebeleSelect.value || !confirmationInput.checked) return
+
+          const invalidField = Array.from(form.querySelectorAll('[required]'))
+            .find((field) => !field.disabled && !field.checkValidity())
+          if (!invalidField) return
+
+          event.preventDefault()
+          requiredFieldsError.style.display = 'block'
+          invalidField.focus()
+        }, true)
+
+        form.querySelectorAll('[required]').forEach((field) => {
+          field.addEventListener('input', () => { requiredFieldsError.style.display = 'none' })
+          field.addEventListener('change', () => { requiredFieldsError.style.display = 'none' })
+        })
+      })
+
+      async function submitCurrentReport() {
+        const selectedIncidentType = document.querySelector('input[name="incidentType"]:checked')?.value || 'General report'
+        const formContext = language === 'am' ? {
+          anonymousEmail: document.getElementById('anonymousEmailAm'),
+          fullName: document.getElementById('fullNameAm'),
+          email: document.getElementById('emailAm'),
+          phone: document.getElementById('phoneAm'),
+          sex: document.getElementById('sexAm'),
+          age: document.getElementById('ageAm'),
+          subcity: document.getElementById('subcityAm'),
+          kebele: document.getElementById('kebeleAm')
+        } : {
+          anonymousEmail: document.getElementById('anonymousEmailEn'),
+          fullName: document.getElementById('fullNameEn'),
+          email: document.getElementById('emailEn'),
+          phone: document.getElementById('phoneEn'),
+          sex: document.getElementById('sexEn'),
+          age: document.getElementById('ageEn'),
+          subcity: document.getElementById('subcityEn'),
+          kebele: document.getElementById('kebeleEn')
+        }
+
+        const reporterDetails = {
+          anonymous: !formContext.anonymousEmail || !formContext.anonymousEmail.value.trim(),
+          anonymous_email: formContext.anonymousEmail?.value?.trim() || null,
+          full_name: formContext.fullName?.value?.trim() || null,
+          email: formContext.email?.value?.trim() || null,
+          phone: formContext.phone?.value?.trim() || null,
+          sex: formContext.sex?.value?.trim() || null,
+          age: formContext.age?.value ? Number(formContext.age.value) : null,
+          subcity: formContext.subcity?.value?.trim() || null,
+          kebele: formContext.kebele?.value?.trim() || null
+        }
+
+        const incidentDetails = {
+          incident_type: selectedIncidentType,
+          report_type: selectedIncidentType,
+          language,
+          description: 'Submitted from report form'
+        }
+
+        const supportingDetails = {}
+        const evidence = []
+        const evidenceFiles = []
+
+        const allInputGroups = [
+          document.getElementById('englishSection'),
+          document.getElementById('amharicSection'),
+          theftDetailsSection,
+          theftDetailsSectionAm,
+          assaultDetailsSection,
+          assaultDetailsSectionAm,
+          sexualDetailsSection,
+          sexualDetailsSectionAm,
+          fraudDetailsSection,
+          fraudDetailsSectionAm,
+          familyDetailsSection,
+          familyDetailsSectionAm,
+          lostDetailsSection,
+          lostDetailsSectionAm,
+          otherDetailsSection,
+          otherDetailsSectionAm,
+          illegalDetailsSection,
+          illegalDetailsSectionAm,
+          missingDetailsSection,
+          missingDetailsSectionAm
+        ]
+
+        const rawPayload = {}
+        allInputGroups.forEach((container) => {
+          if (!container) return
+          container.querySelectorAll('input, select, textarea').forEach((field) => {
+            if (!field.id || !field.name) return
+
+            if (field.type === 'file') {
+              if (field.value) {
+                Array.from(field.files || []).forEach((file) => evidenceFiles.push(file))
+              }
+              return
+            }
+
+            if (field.type === 'radio' || field.type === 'checkbox') {
+              if (field.checked) {
+                rawPayload[field.name || field.id] = field.value
+                supportingDetails[field.name || field.id] = field.value
+              }
+              return
+            }
+
+            const value = field.value.trim()
+            const invalidAnswer = value.toLowerCase() === 'all the questions are answered, selected and checked'
+              || value.toLowerCase() === 'all the questions are answered, selected and checkedall the questions are answered, selected and checked'
+            if (value && !invalidAnswer) {
+              rawPayload[field.name || field.id] = value
+              supportingDetails[field.name || field.id] = value
+            }
+          })
+        })
+
+        const payload = {
+          report_type: selectedIncidentType,
+          language,
+          anonymous_email: reporterDetails.anonymous_email,
+          full_name: reporterDetails.full_name,
+          email: reporterDetails.email,
+          phone: reporterDetails.phone,
+          sex: reporterDetails.sex,
+          age: reporterDetails.age,
+          subcity: reporterDetails.subcity,
+          kebele: reporterDetails.kebele,
+          incident_type: selectedIncidentType,
+          description: incidentDetails.description,
+          reporter_details: reporterDetails,
+          incident_details: incidentDetails,
+          supporting_details: supportingDetails,
+          evidence,
+          raw_payload: rawPayload,
+          status: 'new'
+        }
+
+        try {
+          const requestBody = new FormData()
+          requestBody.append('payload', JSON.stringify({
+            ...payload,
+            evidence,
+          }))
+          evidenceFiles.forEach((file) => requestBody.append('evidence', file))
+          const response = await fetch('/api/reports/', {
+            method: 'POST',
+            headers: { Accept: 'application/json' },
+            body: requestBody,
+          })
+
+          if (!response.ok) {
+            throw new Error(`Backend error: ${response.status}`)
+          }
+
+          return await response.json()
+        } catch (error) {
+          console.error('Report submission failed:', error)
+          alert(language === 'am'
+            ? 'ሪፖርቱ ሊቀመጥ አልቻለም። እባክዎ እንደገና ይሞክሩ።'
+            : 'The report could not be saved. Please check your connection and try again.')
+          return null
+        }
+      }
+
+      async function showConfirmationPage() {
+        const submittedReport = await submitCurrentReport()
+        if (!submittedReport) return
+        lastReportId = String(submittedReport?.trackingNumber || submittedReport?.tracking_number || submittedReport?.id || '')
+        window.localStorage.setItem('crime-report-last-id', lastReportId)
+        updateConfirmationContent(formatReportId(lastReportId))
+        setConfirmationActionHandlers()
+        englishSection.style.display = 'none'
+        amharicSection.style.display = 'none'
+        incidentSection.style.display = 'none'
+        confirmationSection.style.display = 'block'
+        trackingSection.style.display = 'none'
+        theftDetailsSection.style.display = 'none'
+        theftDetailsSectionAm.style.display = 'none'
+        assaultDetailsSection.style.display = 'none'
+        assaultDetailsSectionAm.style.display = 'none'
+        sexualDetailsSection.style.display = 'none'
+        sexualDetailsSectionAm.style.display = 'none'
+        fraudDetailsSection.style.display = 'none'
+        fraudDetailsSectionAm.style.display = 'none'
+        familyDetailsSection.style.display = 'none'
+        familyDetailsSectionAm.style.display = 'none'
+        lostDetailsSection.style.display = 'none'
+        lostDetailsSectionAm.style.display = 'none'
+        otherDetailsSection.style.display = 'none'
+        otherDetailsSectionAm.style.display = 'none'
+        illegalDetailsSection.style.display = 'none'
+        illegalDetailsSectionAm.style.display = 'none'
+        missingDetailsSection.style.display = 'none'
+        missingDetailsSectionAm.style.display = 'none'
+        trackPage('confirmation')
+      }
+
+      function openPage(pageKey) {
+        const isAmharic = language === 'am'
+        englishSection.style.display = 'none'
+        amharicSection.style.display = 'none'
+        incidentSection.style.display = 'none'
+        confirmationSection.style.display = 'none'
+        trackingSection.style.display = 'none'
+        theftDetailsSection.style.display = 'none'
+        theftDetailsSectionAm.style.display = 'none'
+        assaultDetailsSection.style.display = 'none'
+        assaultDetailsSectionAm.style.display = 'none'
+        sexualDetailsSection.style.display = 'none'
+        sexualDetailsSectionAm.style.display = 'none'
+        fraudDetailsSection.style.display = 'none'
+        fraudDetailsSectionAm.style.display = 'none'
+        illegalDetailsSection.style.display = 'none'
+        illegalDetailsSectionAm.style.display = 'none'
+        missingDetailsSection.style.display = 'none'
+        missingDetailsSectionAm.style.display = 'none'
+        familyDetailsSection.style.display = 'none'
+        familyDetailsSectionAm.style.display = 'none'
+        otherDetailsSection.style.display = 'none'
+        otherDetailsSectionAm.style.display = 'none'
+        lostDetailsSection.style.display = 'none'
+        lostDetailsSectionAm.style.display = 'none'
+
+        switch (pageKey) {
+          case 'english':
+            englishSection.style.display = 'block'
+            break
+          case 'amharic':
+            amharicSection.style.display = 'block'
+            break
+          case 'incident':
+            incidentSection.style.display = 'block'
+            break
+          case 'confirmation':
+            confirmationSection.style.display = 'block'
+            break
+          case 'tracking':
+            trackingSection.style.display = 'block'
+            break
+          case 'theft':
+            if (isAmharic) theftDetailsSectionAm.style.display = 'block'
+            else theftDetailsSection.style.display = 'block'
+            break
+          case 'assault':
+            if (isAmharic) assaultDetailsSectionAm.style.display = 'block'
+            else assaultDetailsSection.style.display = 'block'
+            break
+          case 'sexual':
+            if (isAmharic) sexualDetailsSectionAm.style.display = 'block'
+            else sexualDetailsSection.style.display = 'block'
+            break
+          case 'fraud':
+            if (isAmharic) fraudDetailsSectionAm.style.display = 'block'
+            else fraudDetailsSection.style.display = 'block'
+            break
+          case 'illegal':
+            if (isAmharic) illegalDetailsSectionAm.style.display = 'block'
+            else illegalDetailsSection.style.display = 'block'
+            break
+          case 'missing':
+            if (isAmharic) missingDetailsSectionAm.style.display = 'block'
+            else missingDetailsSection.style.display = 'block'
+            break
+          case 'family':
+            if (isAmharic) familyDetailsSectionAm.style.display = 'block'
+            else familyDetailsSection.style.display = 'block'
+            break
+          case 'other':
+            if (isAmharic) otherDetailsSectionAm.style.display = 'block'
+            else otherDetailsSection.style.display = 'block'
+            break
+          case 'lost':
+            if (isAmharic) lostDetailsSectionAm.style.display = 'block'
+            else lostDetailsSection.style.display = 'block'
+            break
+        }
+      }
+
+      function trackPage(pageKey) {
+        if (pageHistory.length && pageHistory[historyIndex] === pageKey) return
+        if (historyIndex < pageHistory.length - 1) {
+          pageHistory.splice(historyIndex + 1)
+        }
+        pageHistory.push(pageKey)
+        historyIndex = pageHistory.length - 1
+        navBackBtn.disabled = historyIndex <= 0
+        navForwardBtn.disabled = historyIndex >= pageHistory.length - 1
+      }
+
+      function goBack() {
+        if (historyIndex <= 0) return
+        historyIndex -= 1
+        const pageKey = pageHistory[historyIndex]
+        openPage(pageKey)
+        navBackBtn.disabled = historyIndex <= 0
+        navForwardBtn.disabled = historyIndex >= pageHistory.length - 1
+      }
+
+      function goForward() {
+        if (historyIndex >= pageHistory.length - 1) return
+        historyIndex += 1
+        const pageKey = pageHistory[historyIndex]
+        openPage(pageKey)
+        navBackBtn.disabled = historyIndex <= 0
+        navForwardBtn.disabled = historyIndex >= pageHistory.length - 1
+      }
+
+      function syncAmharicFileUploadState() {
+        const isAmharic = language === 'am'
+        document.querySelectorAll('input[type="file"]').forEach((fileInput) => {
+          const isAmharicInput = fileInput.id.endsWith('Am') || fileInput.name.endsWith('Am')
+          if (!fileInput.dataset.requiredOriginal) {
+            fileInput.dataset.requiredOriginal = fileInput.hasAttribute('required') ? 'true' : 'false'
+          }
+
+          if (isAmharicInput) {
+            fileInput.removeAttribute('required')
+          } else if (!isAmharic && fileInput.dataset.requiredOriginal === 'true') {
+            fileInput.setAttribute('required', 'required')
+          }
+        })
+      }
+
+      function showLanguage(lang) {
+        // prioritize explicit URL param if present
+        const param = new URLSearchParams(window.location.search).get('lang')
+        const isAmharic = param ? String(param).toLowerCase().startsWith('am') : (lang === 'am')
+        language = isAmharic ? 'am' : 'en'
+        englishSection.style.display = isAmharic ? 'none' : 'block'
+        amharicSection.style.display = isAmharic ? 'block' : 'none'
+        incidentSection.style.display = 'none'
+        confirmationSection.style.display = 'none'
+        trackingSection.style.display = 'none'
+        theftDetailsSection.style.display = 'none'
+        theftDetailsSectionAm.style.display = 'none'
+        assaultDetailsSection.style.display = 'none'
+        assaultDetailsSectionAm.style.display = 'none'
+        fraudDetailsSection.style.display = 'none'
+        fraudDetailsSectionAm.style.display = 'none'
+        incidentTitle.textContent = isAmharic ? 'የክስ አይነት ይምረጡ' : 'Select incident type'
+        incidentSubtitle.textContent = isAmharic ? 'ከሚከተሉት የክስ አይነቶች አንዱን ይምረጡ።' : 'Choose one of the incident types below.'
+        incidentContentEn.style.display = isAmharic ? 'none' : 'grid'
+        incidentContentAm.style.display = isAmharic ? 'grid' : 'none'
+        incidentContinueButton.textContent = isAmharic ? 'ይቀጥሉ' : 'Continue'
+        document.documentElement.lang = lang
+        document.title = isAmharic ? 'የሪፖርት ቅጽ' : 'Report Form'
+        familyDetailsSection.style.display = 'none'
+        familyDetailsSectionAm.style.display = 'none'
+        sexualDetailsSection.style.display = 'none'
+        sexualDetailsSectionAm.style.display = 'none'
+        lostDetailsSection.style.display = 'none'
+        lostDetailsSectionAm.style.display = 'none'
+        otherDetailsSection.style.display = 'none'
+        otherDetailsSectionAm.style.display = 'none'
+        illegalDetailsSection.style.display = 'none'
+        illegalDetailsSectionAm.style.display = 'none'
+        missingDetailsSection.style.display = 'none'
+        missingDetailsSectionAm.style.display = 'none'
+        syncAmharicFileUploadState()
+        setMode(isAmharic ? 'am' : 'en', mode)
+        trackPage(isAmharic ? 'amharic' : 'english')
+      }
+
+      const btnAnonymousEn = document.getElementById('anonymousBtn')
+      const btnContactEn = document.getElementById('contactBtn')
+      const btnAnonymousAm = document.getElementById('anonymousBtnAm')
+      const btnContactAm = document.getElementById('contactBtnAm')
+      if (btnAnonymousEn) btnAnonymousEn.addEventListener('click', (e) => { e.preventDefault(); setMode('en', 'anonymous') })
+      if (btnContactEn) btnContactEn.addEventListener('click', (e) => { e.preventDefault(); setMode('en', 'contact') })
+      if (btnAnonymousAm) btnAnonymousAm.addEventListener('click', (e) => { e.preventDefault(); setMode('am', 'anonymous') })
+      if (btnContactAm) btnContactAm.addEventListener('click', (e) => { e.preventDefault(); setMode('am', 'contact') })
+      if (navBackBtn) navBackBtn.addEventListener('click', goBack)
+      if (navForwardBtn) navForwardBtn.addEventListener('click', goForward)
+      document.getElementById('incidentContinueButton').addEventListener('click', () => {
+        const selected = document.querySelector('input[name="incidentType"]:checked')
+        if (!selected) {
+          return
+        }
+        if (selected.value === 'Family and marriage related crimes') {
+          englishSection.style.display = 'none'
+          amharicSection.style.display = 'none'
+          incidentSection.style.display = 'none'
+          if (language === 'am') {
+            familyDetailsSectionAm.style.display = 'block'
+          } else {
+            familyDetailsSection.style.display = 'block'
+          }
+          trackPage('family')
+          return
+        }
+        if (selected.value === 'Theft') {
+          englishSection.style.display = 'none'
+          amharicSection.style.display = 'none'
+          incidentSection.style.display = 'none'
+          if (language === 'am') {
+            theftDetailsSectionAm.style.display = 'block'
+          } else {
+            theftDetailsSection.style.display = 'block'
+          }
+          trackPage('theft')
+          return
+        }
+        if (selected.value === 'Physical assault' || selected.value === 'አካላዊ ጥቃት') {
+          englishSection.style.display = 'none'
+          amharicSection.style.display = 'none'
+          incidentSection.style.display = 'none'
+          if (language === 'am') {
+            assaultDetailsSectionAm.style.display = 'block'
+          } else {
+            assaultDetailsSection.style.display = 'block'
+          }
+          trackPage('assault')
+          return
+        }
+        if (selected.value === 'Missing person' || selected.value === 'የጠፋ ሰው') {
+          englishSection.style.display = 'none'
+          amharicSection.style.display = 'none'
+          incidentSection.style.display = 'none'
+          if (language === 'am') {
+            missingDetailsSectionAm.style.display = 'block'
+          } else {
+            missingDetailsSection.style.display = 'block'
+          }
+          trackPage('missing')
+          return
+        }
+        
+        if (selected.value === 'Illegal trade and drug trafficking' || selected.value === 'ሕጋዊ ያልሆነ ንግድ እና የአደንዛዥ እጽ ሽያጭ') {
+          englishSection.style.display = 'none'
+          amharicSection.style.display = 'none'
+          incidentSection.style.display = 'none'
+          if (language === 'am') {
+            illegalDetailsSectionAm.style.display = 'block'
+          } else {
+            illegalDetailsSection.style.display = 'block'
+          }
+          trackPage('illegal')
+          return
+        }
+        if (selected.value === 'Fraud and scam') {
+          englishSection.style.display = 'none'
+          amharicSection.style.display = 'none'
+          incidentSection.style.display = 'none'
+          if (language === 'am') {
+            fraudDetailsSectionAm.style.display = 'block'
+          } else {
+            fraudDetailsSection.style.display = 'block'
+          }
+          trackPage('fraud')
+          return
+        }
+        if (selected.value === 'Lost property' || selected.value === 'የጠፋ ንብረት') {
+          englishSection.style.display = 'none'
+          amharicSection.style.display = 'none'
+          incidentSection.style.display = 'none'
+          if (language === 'am') {
+            lostDetailsSectionAm.style.display = 'block'
+          } else {
+            lostDetailsSection.style.display = 'block'
+          }
+          trackPage('lost')
+          return
+        }
+        if (selected.value === 'Other' || selected.value === 'ሌላ') {
+          englishSection.style.display = 'none'
+          amharicSection.style.display = 'none'
+          incidentSection.style.display = 'none'
+          if (language === 'am') {
+            otherDetailsSectionAm.style.display = 'block'
+          } else {
+            otherDetailsSection.style.display = 'block'
+          }
+          trackPage('other')
+          return
+        }
+        if (selected.value === 'Sexual violence' || selected.value === 'ፆታዊ ጥቃት') {
+          englishSection.style.display = 'none'
+          amharicSection.style.display = 'none'
+          incidentSection.style.display = 'none'
+          if (language === 'am') {
+            sexualDetailsSectionAm.style.display = 'block'
+          } else {
+            sexualDetailsSection.style.display = 'block'
+          }
+          trackPage('sexual')
+          return
+        }
+        showIncidentSection()
+      })
+
+      theftForm.addEventListener('submit', (event) => {
+        event.preventDefault()
+        theftError.style.display = 'none'
+
+        const sawSuspect = document.querySelector('input[name="sawSuspect"]:checked')
+        const hasWitnesses = document.querySelector('input[name="hasWitnesses"]:checked')
+        const suspectAnyone = document.querySelector('input[name="suspectAnyone"]:checked')
+        const stolenItem = document.getElementById('stolenItem').value.trim()
+        const theftDescription = document.getElementById('theftDescription').value.trim()
+        const theftLocation = document.getElementById('theftLocation').value.trim()
+        const suspectDescription = document.getElementById('suspectDescription').value.trim()
+        const ownerDescription = document.getElementById('ownerDescription').value.trim()
+        const propertyOwnership = document.getElementById('propertyOwnership').value.trim()
+
+        if (!sawSuspect || !hasWitnesses || !suspectAnyone) {
+          theftError.textContent = 'Please answer all theft questions before submitting.'
+          theftError.style.display = 'block'
+          return
+        }
+
+        if (!stolenItem || !theftDescription || !theftLocation || !suspectDescription || !ownerDescription || !propertyOwnership) {
+          theftError.textContent = 'Please complete all theft detail fields.'
+          theftError.style.display = 'block'
+          return
+        }
+
+        showConfirmationPage()
+        theftForm.reset()
+      })
+
+      document.getElementById('theftFormAm').addEventListener('submit', (event) => {
+        event.preventDefault()
+        const theftErrorAm = document.getElementById('theftErrorAm')
+        theftErrorAm.style.display = 'none'
+
+        const sawSuspect = document.querySelector('input[name="sawSuspectAm"]:checked')
+        const hasWitnesses = document.querySelector('input[name="hasWitnessesAm"]:checked')
+        const suspectAnyone = document.querySelector('input[name="suspectAnyoneAm"]:checked')
+        const stolenItem = document.getElementById('stolenItemAm').value.trim()
+        const theftDescription = document.getElementById('theftDescriptionAm').value.trim()
+        const theftLocation = document.getElementById('theftLocationAm').value.trim()
+        const suspectDescription = document.getElementById('suspectDescriptionAm').value.trim()
+        const ownerDescription = document.getElementById('ownerDescriptionAm').value.trim()
+        const propertyOwnership = document.getElementById('propertyOwnershipAm').value.trim()
+
+        if (!sawSuspect || !hasWitnesses || !suspectAnyone) {
+          theftErrorAm.textContent = 'እባክዎ የስርቆት ሁሉንም ጥያቄዎች ይመልሱ።'
+          theftErrorAm.style.display = 'block'
+          return
+        }
+
+        if (!stolenItem || !theftDescription || !theftLocation || !suspectDescription || !ownerDescription || !propertyOwnership) {
+          theftErrorAm.textContent = 'እባክዎ የስርቆት ሁሉንም ዝርዝሮች ይሙሉ።'
+          theftErrorAm.style.display = 'block'
+          return
+        }
+
+        showConfirmationPage()
+        document.getElementById('theftFormAm').reset()
+      })
+
+      assaultForm.addEventListener('submit', (event) => {
+        event.preventDefault()
+        assaultError.style.display = 'none'
+
+        const knowAttacker = document.querySelector('input[name="knowAttacker"]:checked')
+        const gotInjured = document.querySelector('input[name="gotInjured"]:checked')
+        const visitedHospital = document.querySelector('input[name="visitedHospital"]:checked')
+        const hasWitnessesAssault = document.querySelector('input[name="hasWitnessesAssault"]:checked')
+        const feelDanger = document.querySelector('input[name="feelDanger"]:checked')
+        const assaultDescription = document.getElementById('assaultDescription').value.trim()
+        const assaultWeapon = document.getElementById('assaultWeapon').value.trim()
+        const attackerDescription = document.getElementById('attackerDescription').value.trim()
+
+        if (!knowAttacker || !gotInjured || !visitedHospital || !hasWitnessesAssault || !feelDanger) {
+          assaultError.textContent = 'Please answer all assault questions before submitting.'
+          assaultError.style.display = 'block'
+          return
+        }
+
+        if (!assaultDescription || !assaultWeapon || !attackerDescription) {
+          assaultError.textContent = 'Please complete all assault detail fields.'
+          assaultError.style.display = 'block'
+          return
+        }
+
+        showConfirmationPage()
+        assaultForm.reset()
+      })
+
+      assaultFormAm.addEventListener('submit', (event) => {
+        event.preventDefault()
+        assaultErrorAm.style.display = 'none'
+
+        const knowAttacker = document.querySelector('input[name="knowAttackerAm"]:checked')
+        const gotInjured = document.querySelector('input[name="gotInjuredAm"]:checked')
+        const visitedHospital = document.querySelector('input[name="visitedHospitalAm"]:checked')
+        const hasWitnessesAssault = document.querySelector('input[name="hasWitnessesAssaultAm"]:checked')
+        const feelDanger = document.querySelector('input[name="feelDangerAm"]:checked')
+        const assaultDescription = document.getElementById('assaultDescriptionAm').value.trim()
+        const assaultWeapon = document.getElementById('assaultWeaponAm').value.trim()
+        const attackerDescription = document.getElementById('attackerDescriptionAm').value.trim()
+
+        if (!knowAttacker || !gotInjured || !visitedHospital || !hasWitnessesAssault || !feelDanger) {
+          assaultErrorAm.textContent = 'እባክዎ የጥቃቱን ሁሉንም ጥያቄዎች ይመልሱ።'
+          assaultErrorAm.style.display = 'block'
+          return
+        }
+
+        if (!assaultDescription || !assaultWeapon || !attackerDescription) {
+          assaultErrorAm.textContent = 'እባክዎ የጥቃቱን ሁሉንም ዝርዝሮች ይሙሉ።'
+          assaultErrorAm.style.display = 'block'
+          return
+        }
+
+        showConfirmationPage()
+        assaultFormAm.reset()
+      })
+
+      document.getElementById('fraudForm').addEventListener('submit', (event) => {
+        event.preventDefault()
+        const fraudError = document.getElementById('fraudError')
+        fraudError.style.display = 'none'
+
+        const sentMoney = document.querySelector('input[name="sentMoney"]:checked')
+        const hasReceipts = document.querySelector('input[name="hasReceipts"]:checked')
+        const hasScammerContact = document.querySelector('input[name="hasScammerContact"]:checked')
+        const scamStory = document.getElementById('scamStory').value.trim()
+        const offerDetails = document.getElementById('offerDetails').value.trim()
+
+        if (!sentMoney || !hasReceipts || !hasScammerContact) {
+          fraudError.textContent = 'Please answer all fraud questions before submitting.'
+          fraudError.style.display = 'block'
+          return
+        }
+
+        if (!scamStory || !offerDetails) {
+          fraudError.textContent = 'Please complete all fraud detail fields.'
+          fraudError.style.display = 'block'
+          return
+        }
+
+        showConfirmationPage()
+        document.getElementById('fraudForm').reset()
+      })
+
+      document.getElementById('fraudFormAm').addEventListener('submit', (event) => {
+        event.preventDefault()
+        const fraudErrorAm = document.getElementById('fraudErrorAm')
+        fraudErrorAm.style.display = 'none'
+
+        const sentMoney = document.querySelector('input[name="sentMoneyAm"]:checked')
+        const hasReceipts = document.querySelector('input[name="hasReceiptsAm"]:checked')
+        const hasScammerContact = document.querySelector('input[name="hasScammerContactAm"]:checked')
+        const scamStory = document.getElementById('scamStoryAm').value.trim()
+        const offerDetails = document.getElementById('offerDetailsAm').value.trim()
+
+        if (!sentMoney || !hasReceipts || !hasScammerContact) {
+          fraudErrorAm.textContent = 'እባክዎ የትንኮሳ ሁሉንም ጥያቄዎች ይመልሱ።'
+          fraudErrorAm.style.display = 'block'
+          return
+        }
+
+        if (!scamStory || !offerDetails) {
+          fraudErrorAm.textContent = 'እባክዎ የትንኮሳ ሁሉንም ዝርዝሮች ይሙሉ።'
+          fraudErrorAm.style.display = 'block'
+          return
+        }
+
+        showConfirmationPage()
+        document.getElementById('fraudFormAm').reset()
+      })
+
+      document.getElementById('otherForm').addEventListener('submit', (event) => {
+        event.preventDefault()
+        const otherError = document.getElementById('otherError')
+        otherError.style.display = 'none'
+
+        const anyoneInjured = document.querySelector('input[name="anyoneInjured"]:checked')
+        const hasEvidence = document.querySelector('input[name="hasEvidence"]:checked')
+        const otherDescription = document.getElementById('otherDescription').value.trim()
+        const otherInvolved = document.getElementById('otherInvolved').value.trim()
+
+        if (!anyoneInjured || !hasEvidence) {
+          otherError.textContent = 'Please answer all questions before submitting.'
+          otherError.style.display = 'block'
+          return
+        }
+
+        if (!otherDescription || !otherInvolved) {
+          otherError.textContent = 'Please complete all other incident fields.'
+          otherError.style.display = 'block'
+          return
+        }
+
+        showConfirmationPage()
+        document.getElementById('otherForm').reset()
+      })
+
+      document.getElementById('otherFormAm').addEventListener('submit', (event) => {
+        event.preventDefault()
+        const otherErrorAm = document.getElementById('otherErrorAm')
+        otherErrorAm.style.display = 'none'
+
+        const anyoneInjured = document.querySelector('input[name="anyoneInjuredAm"]:checked')
+        const hasEvidence = document.querySelector('input[name="hasEvidenceAm"]:checked')
+        const otherDescription = document.getElementById('otherDescriptionAm').value.trim()
+        const otherInvolved = document.getElementById('otherInvolvedAm').value.trim()
+
+        if (!anyoneInjured || !hasEvidence) {
+          otherErrorAm.textContent = 'እባክዎ ሁሉንም ጥያቄዎች ይመልሱ።'
+          otherErrorAm.style.display = 'block'
+          return
+        }
+
+        if (!otherDescription || !otherInvolved) {
+          otherErrorAm.textContent = 'እባክዎ ሁሉንም የሌላ ጉዳይ ዝርዝሮች ይሙሉ።'
+          otherErrorAm.style.display = 'block'
+          return
+        }
+
+        showConfirmationPage()
+        document.getElementById('otherFormAm').reset()
+      })
+
+      document.getElementById('lostForm').addEventListener('submit', (event) => {
+        event.preventDefault()
+        const lostError = document.getElementById('lostError')
+        lostError.style.display = 'none'
+
+        const searchedArea = document.querySelector('input[name="searchedArea"]:checked')
+        const highValue = document.querySelector('input[name="highValue"]:checked')
+        const hasUniqueId = document.querySelector('input[name="hasUniqueId"]:checked')
+        const suspectStolen = document.querySelector('input[name="suspectStolen"]:checked')
+        const itemDesc = document.getElementById('lostItemDescription').value.trim()
+        const whenWhere = document.getElementById('lostWhenWhere').value.trim()
+        const uniqueFeatures = document.getElementById('lostUniqueFeatures').value.trim()
+
+        if (!searchedArea || !highValue || !hasUniqueId || !suspectStolen) {
+          lostError.textContent = 'Please answer all questions before submitting.'
+          lostError.style.display = 'block'
+          return
+        }
+
+        if (!itemDesc || !whenWhere || !uniqueFeatures) {
+          lostError.textContent = 'Please complete all required lost property fields.'
+          lostError.style.display = 'block'
+          return
+        }
+
+        showConfirmationPage()
+        document.getElementById('lostForm').reset()
+      })
+
+      document.getElementById('lostFormAm').addEventListener('submit', (event) => {
+        event.preventDefault()
+        const lostErrorAm = document.getElementById('lostErrorAm')
+        lostErrorAm.style.display = 'none'
+
+        const searchedArea = document.querySelector('input[name="searchedAreaAm"]:checked')
+        const highValue = document.querySelector('input[name="highValueAm"]:checked')
+        const hasUniqueId = document.querySelector('input[name="hasUniqueIdAm"]:checked')
+        const suspectStolen = document.querySelector('input[name="suspectStolenAm"]:checked')
+        const itemDesc = document.getElementById('lostItemDescriptionAm').value.trim()
+        const whenWhere = document.getElementById('lostWhenWhereAm').value.trim()
+        const uniqueFeatures = document.getElementById('lostUniqueFeaturesAm').value.trim()
+
+        if (!searchedArea || !highValue || !hasUniqueId || !suspectStolen) {
+          lostErrorAm.textContent = 'እባክዎ ሁሉንም ጥያቄዎች ይመልሱ።'
+          lostErrorAm.style.display = 'block'
+          return
+        }
+
+        if (!itemDesc || !whenWhere || !uniqueFeatures) {
+          lostErrorAm.textContent = 'እባክዎ ሁሉንም የጠፋ ንብረት ዝርዝሮች ይሙሉ።'
+          lostErrorAm.style.display = 'block'
+          return
+        }
+
+        showConfirmationPage()
+        document.getElementById('lostFormAm').reset()
+      })
+
+      document.getElementById('illegalForm').addEventListener('submit', (event) => {
+        event.preventDefault()
+        const illegalError = document.getElementById('illegalError')
+        illegalError.style.display = 'none'
+
+        const witnessed = document.querySelector('input[name="witnessed"]:checked')
+        const stillHappening = document.querySelector('input[name="stillHappening"]:checked')
+        const knowPeople = document.querySelector('input[name="knowPeople"]:checked')
+        const hasWitnesses = document.querySelector('input[name="hasWitnessesIllegal"]:checked')
+        const hasEvidence = document.querySelector('input[name="hasEvidenceIllegal"]:checked')
+        const observedDescription = document.getElementById('observedDescription').value.trim()
+        const additionalDetails = document.getElementById('additionalDetails').value.trim()
+
+        if (!witnessed || !stillHappening || !knowPeople || !hasWitnesses || !hasEvidence) {
+          illegalError.textContent = 'Please answer all questions before submitting.'
+          illegalError.style.display = 'block'
+          return
+        }
+
+        if (!observedDescription || !additionalDetails) {
+          illegalError.textContent = 'Please complete all description fields.'
+          illegalError.style.display = 'block'
+          return
+        }
+
+        showConfirmationPage()
+        document.getElementById('illegalForm').reset()
+      })
+
+      document.getElementById('illegalFormAm').addEventListener('submit', (event) => {
+        event.preventDefault()
+        const illegalErrorAm = document.getElementById('illegalErrorAm')
+        illegalErrorAm.style.display = 'none'
+
+        const witnessed = document.querySelector('input[name="witnessedAm"]:checked')
+        const stillHappening = document.querySelector('input[name="stillHappeningAm"]:checked')
+        const knowPeople = document.querySelector('input[name="knowPeopleAm"]:checked')
+        const hasWitnesses = document.querySelector('input[name="hasWitnessesIllegalAm"]:checked')
+        const hasEvidence = document.querySelector('input[name="hasEvidenceIllegalAm"]:checked')
+        const observedDescription = document.getElementById('observedDescriptionAm').value.trim()
+        const additionalDetails = document.getElementById('additionalDetailsAm').value.trim()
+
+        if (!witnessed || !stillHappening || !knowPeople || !hasWitnesses || !hasEvidence) {
+          illegalErrorAm.textContent = 'እባክዎ ሁሉንም ጥያቄዎች ይመልሱ።'
+          illegalErrorAm.style.display = 'block'
+          return
+        }
+
+        if (!observedDescription || !additionalDetails) {
+          illegalErrorAm.textContent = 'እባክዎ ሁሉንም ዝርዝሮች ይሙሉ።'
+          illegalErrorAm.style.display = 'block'
+          return
+        }
+
+        showConfirmationPage()
+        document.getElementById('illegalFormAm').reset()
+      })
+
+      document.getElementById('missingForm').addEventListener('submit', (event) => {
+        event.preventDefault()
+        const missingError = document.getElementById('missingError')
+        missingError.style.display = 'none'
+
+        const isChild = document.querySelector('input[name="isChild"]:checked')
+        const missingOver24 = document.querySelector('input[name="missingOver24"]:checked')
+        const hasMedicalCondition = document.querySelector('input[name="hasMedicalCondition"]:checked')
+        const disappearanceType = document.querySelector('input[name="disappearanceType"]:checked')
+        const checkedPlaces = document.querySelector('input[name="checkedPlaces"]:checked')
+        const suspectFoulPlay = document.querySelector('input[name="suspectFoulPlay"]:checked')
+        const missingPersonInfo = document.getElementById('missingPersonInfo').value.trim()
+        const lastSeen = document.getElementById('lastSeen').value.trim()
+        const disappearanceCircumstances = document.getElementById('disappearanceCircumstances').value.trim()
+        const hasPicture = document.querySelector('input[name="hasPicture"]:checked')
+
+        if (!isChild || !missingOver24 || !hasMedicalCondition || !disappearanceType || !checkedPlaces || !suspectFoulPlay) {
+          missingError.textContent = 'Please answer all questions before submitting.'
+          missingError.style.display = 'block'
+          return
+        }
+
+        if (!missingPersonInfo || !lastSeen || !disappearanceCircumstances) {
+          missingError.textContent = 'Please complete all description fields.'
+          missingError.style.display = 'block'
+          return
+        }
+
+        showConfirmationPage()
+        document.getElementById('missingForm').reset()
+      })
+
+      document.getElementById('missingFormAm').addEventListener('submit', (event) => {
+        event.preventDefault()
+        const missingErrorAm = document.getElementById('missingErrorAm')
+        missingErrorAm.style.display = 'none'
+
+        const isChild = document.querySelector('input[name="isChildAm"]:checked')
+        const missingOver24 = document.querySelector('input[name="missingOver24Am"]:checked')
+        const hasMedicalCondition = document.querySelector('input[name="hasMedicalConditionAm"]:checked')
+        const disappearanceType = document.querySelector('input[name="disappearanceTypeAm"]:checked')
+        const checkedPlaces = document.querySelector('input[name="checkedPlacesAm"]:checked')
+        const suspectFoulPlay = document.querySelector('input[name="suspectFoulPlayAm"]:checked')
+        const missingPersonInfo = document.getElementById('missingPersonInfoAm').value.trim()
+        const lastSeen = document.getElementById('lastSeenAm').value.trim()
+        const disappearanceCircumstances = document.getElementById('disappearanceCircumstancesAm').value.trim()
+        const hasPicture = document.querySelector('input[name="hasPictureAm"]:checked')
+
+        if (!isChild || !missingOver24 || !hasMedicalCondition || !disappearanceType || !checkedPlaces || !suspectFoulPlay) {
+          missingErrorAm.textContent = 'እባክዎ ሁሉንም ጥያቄዎች ይመልሱ።'
+          missingErrorAm.style.display = 'block'
+          return
+        }
+
+        if (!missingPersonInfo || !lastSeen || !disappearanceCircumstances) {
+          missingErrorAm.textContent = 'እባክዎ ሁሉንም ዝርዝሮች ይሙሉ።'
+          missingErrorAm.style.display = 'block'
+          return
+        }
+
+        showConfirmationPage()
+        document.getElementById('missingFormAm').reset()
+      })
+
+      document.getElementById('familyForm').addEventListener('submit', (event) => {
+        event.preventDefault()
+        const familyError = document.getElementById('familyError')
+        familyError.style.display = 'none'
+
+        const domesticViolence = document.querySelector('input[name="domesticViolence"]:checked')
+        const forcedMarriage = document.querySelector('input[name="forcedMarriage"]:checked')
+        const childrenInvolved = document.querySelector('input[name="childrenInvolved"]:checked')
+        const happenedBefore = document.querySelector('input[name="happenedBefore"]:checked')
+        const feelUnsafe = document.querySelector('input[name="feelUnsafe"]:checked')
+        const needProtection = document.querySelector('input[name="needProtection"]:checked')
+        const whatHappened = document.getElementById('familyWhatHappened').value.trim()
+        const whoInvolved = document.getElementById('familyWhoInvolved').value.trim()
+
+        if (!domesticViolence || !forcedMarriage || !childrenInvolved || !happenedBefore || !feelUnsafe || !needProtection) {
+          familyError.textContent = 'Please answer all questions before submitting.'
+          familyError.style.display = 'block'
+          return
+        }
+
+        if (!whatHappened || !whoInvolved) {
+          familyError.textContent = 'Please complete the required detail fields.'
+          familyError.style.display = 'block'
+          return
+        }
+
+        if (needProtection && needProtection.value === 'Yes') {
+          alert('If you need immediate protection, contact local authorities right away.')
+        }
+
+        showConfirmationPage()
+        document.getElementById('familyForm').reset()
+      })
+
+      document.getElementById('familyFormAm').addEventListener('submit', (event) => {
+        event.preventDefault()
+        const familyErrorAm = document.getElementById('familyErrorAm')
+        familyErrorAm.style.display = 'none'
+
+        const domesticViolence = document.querySelector('input[name="domesticViolenceAm"]:checked')
+        const forcedMarriage = document.querySelector('input[name="forcedMarriageAm"]:checked')
+        const childrenInvolved = document.querySelector('input[name="childrenInvolvedAm"]:checked')
+        const happenedBefore = document.querySelector('input[name="happenedBeforeAm"]:checked')
+        const feelUnsafe = document.querySelector('input[name="feelUnsafeAm"]:checked')
+        const needProtection = document.querySelector('input[name="needProtectionAm"]:checked')
+        const whatHappened = document.getElementById('familyWhatHappenedAm').value.trim()
+        const whoInvolved = document.getElementById('familyWhoInvolvedAm').value.trim()
+
+        if (!domesticViolence || !forcedMarriage || !childrenInvolved || !happenedBefore || !feelUnsafe || !needProtection) {
+          familyErrorAm.textContent = 'እባክዎ ሁሉንም ጥያቄዎች ይመልሱ።'
+          familyErrorAm.style.display = 'block'
+          return
+        }
+
+        if (!whatHappened || !whoInvolved) {
+          familyErrorAm.textContent = 'እባክዎ የሚጠየቁትን ዝርዝሮች ይሙሉ።'
+          familyErrorAm.style.display = 'block'
+          return
+        }
+
+        if (needProtection && needProtection.value === 'Yes') {
+          alert('እርዳታ የሚያስፈልጎት ከሆነ ፈጣን ለማድረግ ወዳጅ ቦታዎችን ያገኙ።')
+        }
+
+        showConfirmationPage()
+        document.getElementById('familyFormAm').reset()
+      })
+
+      document.getElementById('sexualForm').addEventListener('submit', (event) => {
+        event.preventDefault()
+        const sexualError = document.getElementById('sexualError')
+        sexualError.style.display = 'none'
+
+        const physicalContact = document.querySelector('input[name="physicalContact"]:checked')
+        const knowPerpetrator = document.querySelector('input[name="knowPerpetrator"]:checked')
+        const recent72 = document.querySelector('input[name="recent72"]:checked')
+        const soughtMedical = document.querySelector('input[name="soughtMedical"]:checked')
+        const witnesses = document.querySelector('input[name="witnessesSexual"]:checked')
+        const confidential = document.querySelector('input[name="confidential"]:checked')
+        const needSupport = document.querySelector('input[name="needSupport"]:checked')
+        const describe = document.getElementById('sexualDescribe').value.trim()
+        const whenWhere = document.getElementById('sexualWhenWhere').value.trim()
+
+        if (!physicalContact || !knowPerpetrator || !recent72 || !soughtMedical || !witnesses || !confidential || !needSupport) {
+          sexualError.textContent = 'Please answer all questions before submitting.'
+          sexualError.style.display = 'block'
+          return
+        }
+
+        if (!describe || !whenWhere) {
+          sexualError.textContent = 'Please complete the required description fields.'
+          sexualError.style.display = 'block'
+          return
+        }
+
+        if (needSupport && needSupport.value === 'Yes') {
+          alert('If you need immediate support, please contact local medical or safety services.')
+        }
+
+        showConfirmationPage()
+        document.getElementById('sexualForm').reset()
+      })
+
+      document.getElementById('sexualFormAm').addEventListener('submit', (event) => {
+        event.preventDefault()
+        const sexualErrorAm = document.getElementById('sexualErrorAm')
+        sexualErrorAm.style.display = 'none'
+
+        const physicalContact = document.querySelector('input[name="physicalContactAm"]:checked')
+        const knowPerpetrator = document.querySelector('input[name="knowPerpetratorAm"]:checked')
+        const recent72 = document.querySelector('input[name="recent72Am"]:checked')
+        const soughtMedical = document.querySelector('input[name="soughtMedicalAm"]:checked')
+        const witnesses = document.querySelector('input[name="witnessesSexualAm"]:checked')
+        const confidential = document.querySelector('input[name="confidentialAm"]:checked')
+        const needSupport = document.querySelector('input[name="needSupportAm"]:checked')
+        const describe = document.getElementById('sexualDescribeAm').value.trim()
+        const whenWhere = document.getElementById('sexualWhenWhereAm').value.trim()
+
+        if (!physicalContact || !knowPerpetrator || !recent72 || !soughtMedical || !witnesses || !confidential || !needSupport) {
+          sexualErrorAm.textContent = 'እባክዎ ሁሉንም ጥያቄዎች ይመልሱ።'
+          sexualErrorAm.style.display = 'block'
+          return
+        }
+
+        if (!describe || !whenWhere) {
+          sexualErrorAm.textContent = 'እባክዎ የሚጠየቁትን መግለጫ ይሙሉ።'
+          sexualErrorAm.style.display = 'block'
+          return
+        }
+
+        if (needSupport && needSupport.value === 'Yes') {
+          alert('እርዳታ የሚያስፈልጎት ከሆነ ፈጣን የሕክምና ወይም የደህንነት አገልግሎቶችን ያግኙ።')
+        }
+
+        showConfirmationPage()
+        document.getElementById('sexualFormAm').reset()
+      })
+
+      showLanguage(language)
+
+      const validateAndSubmit = (section, formId, errorId, anonymousInputId, fullNameId, emailId, phoneId, ageId, kebeleId) => {
+        const form = document.getElementById(formId)
+        const errorEl = document.getElementById(errorId)
+        form.addEventListener('submit', (event) => {
+          event.preventDefault()
+          errorEl.style.display = 'none'
+
+          const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+          const anonymousSection = section === 'am' ? document.getElementById('anonymousSectionAm') : document.getElementById('anonymousSectionEn')
+          const isAnonymousMode = anonymousSection.style.display === 'block'
+
+          if (isAnonymousMode) {
+            const email = document.getElementById(anonymousInputId).value.trim()
+            if (!emailPattern.test(email)) {
+              errorEl.textContent = section === 'am' ? 'እባክዎ ትክክለኛ ኢሜይል ያስገቡ።' : 'Please enter a valid email address.'
+              errorEl.style.display = 'block'
+              return
+            }
+            showIncidentSection()
+            return
+          }
+
+          const fullName = document.getElementById(fullNameId).value.trim()
+          const email = document.getElementById(emailId).value.trim()
+          const phone = document.getElementById(phoneId).value.trim()
+          const ageVal = document.getElementById(ageId).value.trim()
+          const kebele = document.getElementById(kebeleId).value.trim()
+          const sex = document.getElementById(section === 'am' ? 'sexAm' : 'sexEn').value.trim()
+          const subcity = document.getElementById(section === 'am' ? 'subcityAm' : 'subcityEn').value.trim()
+
+          if (!fullName || !email || !phone || !sex || !ageVal || !subcity || !kebele) {
+            errorEl.textContent = section === 'am' ? 'እባክዎ ሁሉንም የግል መረጃ መስኮች ይሙሉ።' : 'Please fill in all personal information fields before continuing.'
+            errorEl.style.display = 'block'
+            return
+          }
+
+          if (!emailPattern.test(email)) {
+            errorEl.textContent = section === 'am' ? 'እባክዎ ትክክለኛ ኢሜይል ያስገቡ።' : 'Please enter a valid email address.'
+            errorEl.style.display = 'block'
+            return
+          }
+
+          const namePattern = /^[A-Za-z ]{4,}$/
+          if (!namePattern.test(fullName)) {
+            errorEl.textContent = section === 'am' ? 'ሙሉ ስም ቢያንስ 4 ፊደላት መሆን አለበት እና አሉታዊ ፊደላት እና ክፍተቶች ብቻ ይጠቀሙ።' : 'Full name must be at least 4 letters and contain only letters and spaces.'
+            errorEl.style.display = 'block'
+            return
+          }
+
+          const phonePattern = /^(09|07)\d{8}$/
+          if (!phonePattern.test(phone)) {
+            errorEl.textContent = section === 'am' ? 'ስልክ ቁጥር 09 ወይም 07 በመጀመር እና ትክክለኛ 10 አሃዞች መሆን አለበት።' : 'Phone must start with 09 or 07 and be exactly 10 digits.'
+            errorEl.style.display = 'block'
+            return
+          }
+
+          const age = parseInt(ageVal, 10)
+          if (isNaN(age) || age < 18) {
+            errorEl.textContent = section === 'am' ? 'ሪፖርት ለመቀጠል እስከ 18 ዓመት ወይም ከዚያ በላይ መሆን አለበት።' : 'You must be 18 years or older to proceed.'
+            errorEl.style.display = 'block'
+            return
+          }
+
+          showIncidentSection()
+        })
+      }
+
+      validateAndSubmit('en', 'reportFormEn', 'errorEn', 'anonymousEmailEn', 'fullNameEn', 'emailEn', 'phoneEn', 'ageEn', 'kebeleEn')
+      validateAndSubmit('am', 'reportFormAm', 'errorAm', 'anonymousEmailAm', 'fullNameAm', 'emailAm', 'phoneAm', 'ageAm', 'kebeleAm')
+
+      ;(async () => {
+        if (urlParams.get('mode') !== 'track') return
+
+        setConfirmationActionHandlers()
+        openPage('tracking')
+        trackPage('tracking')
+        document.getElementById('trackingTitle').textContent = language === 'am' ? 'ሪፖርትዎን ይከታተሉ' : 'Track report'
+        document.getElementById('trackingMessage').textContent = language === 'am'
+          ? 'ሪፖርትዎን ለመከታተል የሪፖርት መለያ ቁጥርዎን ያስገቡ።'
+          : 'Enter your report ID to track your report.'
+        document.getElementById('trackingInput').focus()
+      })()
+    </script>
+  </body>
+</html>
